@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:feed_you_flutter/Assets.dart';
 import 'package:feed_you_flutter/WebView.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,7 +38,9 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        //
+        //
+        // primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(
         title: 'Feed You'
@@ -71,19 +79,54 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void fetchFeed()  async {
-    var url = Uri.parse('https://www.ultimouomo.com/feed');
+  Future<List> readFeedList(String lang, int index) async {
     try {
-      http.Response response = await http.get(url);
-      if (response.statusCode == 200) {
-        String data = response.body;
-        var decodedData = RssFeed.parse(data);
-        _setList(decodedData.items);
-      } else {
+      Map<String, List> feeds = Assets().feeds(lang)!;
+      return feeds.keys.contains(index.toString())? feeds[index.toString()]! :
+        [];
+    } catch (e) {
+      // If encountering an error, return 0
+      return [];
+    }
+  }
+
+  void fetchFeed()  async {
+    final prefs = await SharedPreferences.getInstance();
+
+    //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
+    await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
+    await prefs.setString('lang', 'it');
+
+    String stringTopics = prefs.getString('prefTopics') ?? '';
+    String stringLang = prefs.getString('lang') ?? '';
+    if (stringTopics == '' || stringLang == ''){
+      _setList([]);
+    }
+    else {
+      List<dynamic> prefTopics = jsonDecode(stringTopics);
+      List<double> bounds = [];
+      double rand = Random().nextDouble();
+      bounds.add(prefTopics.first);
+      int i = 1;
+      for(; i< prefTopics.length && rand< bounds[i-1]; i++){
+        bounds.add(bounds[i-1] + prefTopics[i]);
+      }
+
+      List feeds = await readFeedList(stringLang, i);
+      feeds = (feeds.isNotEmpty) ? feeds : ["http://google.com"];
+      var url = Uri.parse(feeds[0]);
+      try {
+        http.Response response = await http.get(url);
+        if (response.statusCode == 200) {
+          String data = response.body;
+          var decodedData = RssFeed.parse(data);
+          _setList(decodedData.items);
+        } else {
+          _setList([]);
+        }
+      } catch (e) {
         _setList([]);
       }
-    } catch (e) {
-      _setList([]);
     }
   }
 
@@ -116,15 +159,20 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-
     return WillPopScope(
         onWillPop: _onWillPop,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.white,
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            title: const Align(alignment: Alignment.center,child: Text("Feed You", style: TextStyle(fontFamily: 'RockSalt', color: Colors.teal, fontSize: 20.0),)),
+            centerTitle: true,
+            title:const Text(
+                "Feed You",
+                style: TextStyle(
+                    fontFamily: 'RockSalt',
+                    color: Colors.teal,
+                    fontSize: 20.0
+                )
+            ),
           ),
 
           body: Container(
@@ -195,8 +243,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   initialData: "Loading text..",
                   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                     if (snapshot.hasData) {
-                      String res = snapshot.data.toString();
-                      _incrementCounter(res);
+                      String assets = snapshot.data.toString();
+                      _incrementCounter(assets);
                     } else if (snapshot.hasError) {
                       setState(() {
                         _incrementCounter(snapshot.error.toString());

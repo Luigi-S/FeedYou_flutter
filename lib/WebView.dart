@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class MyWebView extends StatefulWidget {
@@ -24,8 +25,23 @@ class MyWebViewState extends State<MyWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return  WebView(
-      initialUrl: newsLink,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title:const Text(
+              "Feed You",
+              style: TextStyle(
+                  fontFamily: 'RockSalt',
+                  color: Colors.teal,
+                  fontSize: 20.0
+              )
+        ),
+      ),
+
+      body: WebView(
+        initialUrl: newsLink,
+      )
     );
   }
 }
