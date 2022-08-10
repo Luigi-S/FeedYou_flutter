@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:feed_you_flutter/WebView.dart';
 import 'package:flutter/material.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
@@ -11,9 +12,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
-  MyApp({super.key});
-
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -88,6 +87,27 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: const Text('Are you sure?'),
+            content: const Text('Do you want to exit an App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
+            ],
+          ),
+    )) ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -97,158 +117,170 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("FEED YOU"),
-      ),
-
-      body: Container(
-        height: double.maxFinite,
-        width: double.maxFinite,
-        padding: const EdgeInsets.fromLTRB(10,10,10,0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child:ListView.builder(
-              shrinkWrap: true,
-              itemCount: _result.length,
-              prototypeItem: ListTile(
-                title: Text(_result.isEmpty? "titolo" : _result.first.title),
-              ),
-              itemBuilder: (context, index) {
-                return ListTile(title: Card(
-                    elevation: 5,
-                    child:  Padding(
-                      padding: EdgeInsets.all(7),
-                      child: Stack(children: <Widget>[
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Stack(
-                            children: <Widget>[
-                              Text(_result[index].title),
-                            ]
-                          )
-                        )
-                      ])
-                    )
-                ));
-              }
+    return WillPopScope(
+        onWillPop: _onWillPop,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: const Align(alignment: Alignment.center,child: Text("Feed You", style: TextStyle(fontFamily: 'RockSalt', color: Colors.teal, fontSize: 20.0),)),
           ),
-        ),
-      ),
 
-      /**body:ListView.builder(
-        itemCount: 1, //widget.items.length,
-        prototypeItem: ListTile(
-          title: FutureBuilder(
-            future: Future {()=>_result},
-          initialData: "Loading text..",
-          builder: (BuildContext context, AsyncSnapshot<String> text) {
-            return SingleChildScrollView(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  text.data ?? "FLUTTER MERDA",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 19.0,
+          body: Container(
+            height: double.maxFinite,
+            width: double.maxFinite,
+            padding: const EdgeInsets.fromLTRB(4,10,4,0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child:ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _result.length,
+                  prototypeItem: ListTile(
+                    title: Text(_result.isEmpty? "titolo" : _result.first.title),
                   ),
-                )
-            );
-          }),
-        ),
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: FutureBuilder(
-              future: fetchFeed(),
+                  itemBuilder: (context, index) {
+                    return ListTile(title:GestureDetector(
+                      onTap:  () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyWebView(link: _result[index].link)),
+                        );
+                      },
+                      child: Card(
+                        elevation: 5,
+                        child:  Padding(
+                          padding: EdgeInsets.all(7),
+                          child: Stack(children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Stack(
+                                children: <Widget>[
+                                  Text(_result[index].title, style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
+                                ]
+                              )
+                            )
+                          ])
+                        )
+                    ))
+                    );
+                  }
+              ),
+            ),
+          ),
+
+          /**body:ListView.builder(
+            itemCount: 1, //widget.items.length,
+            prototypeItem: ListTile(
+              title: FutureBuilder(
+                future: Future {()=>_result},
               initialData: "Loading text..",
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  String res = snapshot.data.toString();
-                  _incrementCounter(res);
-                } else if (snapshot.hasError) {
-                  setState(() {
-                    _incrementCounter(snapshot.error.toString());
-                  });
-                }
-                // By default, show a loading spinner
-                return CircularProgressIndicator();
-              }),
-          );
-        },
-      ),**/
-      /**Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-
-
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-
-            /**SingleChildScrollView(
-
-
-              child: Container(
-                color: Colors.white,
-                height: 200.0,
-                width: double.infinity,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
-                              side: BorderSide(
-                                color: Colors.grey.withOpacity(0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: Container(
-                              color: Colors.white,
-                              width: 200,
-                              height: 200,
-                            ),
-                          )
-                        ],
+              builder: (BuildContext context, AsyncSnapshot<String> text) {
+                return SingleChildScrollView(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      text.data ?? "FLUTTER MERDA",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19.0,
                       ),
                     )
-                  ],
+                );
+              }),
+            ),
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: FutureBuilder(
+                  future: fetchFeed(),
+                  initialData: "Loading text..",
+                  builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.hasData) {
+                      String res = snapshot.data.toString();
+                      _incrementCounter(res);
+                    } else if (snapshot.hasError) {
+                      setState(() {
+                        _incrementCounter(snapshot.error.toString());
+                      });
+                    }
+                    // By default, show a loading spinner
+                    return CircularProgressIndicator();
+                  }),
+              );
+            },
+          ),**/
+          /**Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+              // Column is also a layout widget. It takes a list of children and
+              // arranges them vertically. By default, it sizes itself to fit its
+              // children horizontally, and tries to be as tall as its parent.
+              //
+              // Invoke "debug painting" (press "p" in the console, choose the
+              // "Toggle Debug Paint" action from the Flutter Inspector in Android
+              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+              // to see the wireframe for each widget.
+              //
+              // Column has various properties to control how it sizes itself and
+              // how it positions its children. Here we use mainAxisAlignment to
+              // center the children vertically; the main axis here is the vertical
+              // axis because Columns are vertical (the cross axis would be
+              // horizontal).
+              mainAxisAlignment: MainAxisAlignment.center,
+
+
+              children: <Widget>[
+                const Text(
+                  'You have pushed the button this many times:',
                 ),
-              ),
-            ),**/
-          ],
-        ),
-      ),**/
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchFeed,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+                Text(
+                  '$_counter',
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+
+                /**SingleChildScrollView(
+
+
+                  child: Container(
+                    color: Colors.white,
+                    height: 200.0,
+                    width: double.infinity,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                  side: BorderSide(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Container(
+                                  color: Colors.white,
+                                  width: 200,
+                                  height: 200,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),**/
+              ],
+            ),
+          ),**/
+          floatingActionButton: FloatingActionButton(
+            onPressed: fetchFeed,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ), // This trailing comma makes auto-formatting nicer for build methods.
+        )
     );
   }
 }
