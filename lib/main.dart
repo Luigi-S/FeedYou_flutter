@@ -65,6 +65,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+//TODO implementare: loading icon, caricamento SENZA bottone, swipe per ricaricare
+
 class _MyHomePageState extends State<MyHomePage> {
   List _result = [];
   List _sources = [];
@@ -86,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final prefs = await SharedPreferences.getInstance();
 
     //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
+    //TODO rimuovere quando inserita selezione preferenze
     await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
     await prefs.setString('lang', 'it');
 
@@ -109,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
       List newsByTopic = [];
 
       //TODO per rapidità questa versione non ha i link bloccati
-      //TODO testo sballa caratteri
 
       for (String topic in feeds.keys){
         newsByTopic.add(<NewsData>[]);
@@ -153,12 +155,8 @@ class _MyHomePageState extends State<MyHomePage> {
               }**/
 
               favicon.Icon? ico = await favicon.Favicon.getBest(items.first.link!);
-              String favUrl = ico?.url ?? "https://google.com/favicon.ico";
-              Image img = Image.network(
-                  favUrl,
-                  height: 30,
-                  width: 30,
-                  fit: BoxFit.fill);
+              Image img = ico!= null ? Image.network(ico.url,height: 30,width: 30,fit: BoxFit.fill) :
+                  const Image(image: AssetImage('images/logo.png'),height: 30,width: 30,fit: BoxFit.fill);
 
               Color col = Assets().topicColor(int.parse(topic));
               sources.add(SourceData(feeds[topic]![i], img, topics[int.parse(topic)], col));
