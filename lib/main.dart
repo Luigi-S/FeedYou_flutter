@@ -118,8 +118,9 @@ class _MyHomePageState extends State<MyHomePage> {
           try {
             http.Response response1 = await http.get(url);
             if (response1.statusCode == 200) {
-              String data = response1.body;
-              var decodedData = RssFeed.parse(data);
+              //String data = response1.body;
+              //var codeUnits = response1.body.codeUnits;
+              var decodedData = RssFeed.parse((const Utf8Decoder().convert(response1.bodyBytes)));
               List<RssItem> items = decodedData.items!;
 
               /**var url = Uri.parse(items.first.link!);
@@ -266,7 +267,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                             alignment: Alignment.topLeft,
                                             child: Stack(
                                                 children: <Widget>[
-                                                  Text(_result[index].title, style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
+                                                  Text(
+                                                    _result[index].title,
+                                                    style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
                                                 ]
                                             )
                                           )
