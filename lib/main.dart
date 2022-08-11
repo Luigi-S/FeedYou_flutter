@@ -79,55 +79,62 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<List> readFeedList(String lang, int index) async {
-    try {
-      Map<String, List> feeds = Assets().feeds(lang)!;
-      return feeds.keys.contains(index.toString())? feeds[index.toString()]! :
-        [];
-    } catch (e) {
-      // If encountering an error, return 0
-      return [];
-    }
-  }
 
   void fetchFeed()  async {
+    print("YOU PRESSED IT");
     final prefs = await SharedPreferences.getInstance();
 
     //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
     await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
     await prefs.setString('lang', 'it');
 
+    //lista da popolare con le notizie da far comparire
+    List news = [];
+
     String stringTopics = prefs.getString('prefTopics') ?? '';
     String stringLang = prefs.getString('lang') ?? '';
-    if (stringTopics == '' || stringLang == ''){
-      _setList([]);
-    }
-    else {
+    if (stringTopics != '' && stringLang != ''){
       List<dynamic> prefTopics = jsonDecode(stringTopics);
       List<double> bounds = [];
-      double rand = Random().nextDouble();
       bounds.add(prefTopics.first);
-      int i = 1;
-      for(; i< prefTopics.length && rand< bounds[i-1]; i++){
+      for(int i = 1; i< prefTopics.length; i++){
         bounds.add(bounds[i-1] + prefTopics[i]);
       }
+      
+      //lista dei link ai feed di una lingua, divisi per topic
+      Map<String, List> feeds = Assets().feeds(stringLang)!;
+      List newsByTopic = [];
 
-      List feeds = await readFeedList(stringLang, i);
-      feeds = (feeds.isNotEmpty) ? feeds : ["http://google.com"];
-      var url = Uri.parse(feeds[0]);
-      try {
-        http.Response response = await http.get(url);
-        if (response.statusCode == 200) {
-          String data = response.body;
-          var decodedData = RssFeed.parse(data);
-          _setList(decodedData.items);
-        } else {
-          _setList([]);
+      //TODO per rapidità questa versione non ha i link bloccati
+      //TODO aggiungere il topic ed il logo ai vari elementi
+
+      for (String topic in feeds.keys){
+        newsByTopic.add(<RssItem>[]);
+        for (int i =0 ;i<feeds[topic]!.length; i++){
+          var url = Uri.parse(feeds[topic]![i]);
+          try {
+            http.Response response = await http.get(url);
+            if (response.statusCode == 200) {
+              String data = response.body;
+              var decodedData = RssFeed.parse(data);
+              List<RssItem> items = decodedData.items!;
+              items.shuffle();
+              for (RssItem item in items) {
+                newsByTopic[int.parse(topic)].add(item);
+              }
+            }
+          } catch (e) {;}
         }
-      } catch (e) {
-        _setList([]);
+      }
+
+      for(int j =0; j<40; j++){
+        double rand = Random().nextDouble();
+        int i =0;
+        while(i< bounds.length && rand>bounds[i]){i++;}
+        news.add(newsByTopic[i].removeAt(0));
       }
     }
+    _setList(news);
   }
 
   Future<bool> _onWillPop() async {
@@ -178,43 +185,46 @@ class _MyHomePageState extends State<MyHomePage> {
           body: Container(
             height: double.maxFinite,
             width: double.maxFinite,
-            padding: const EdgeInsets.fromLTRB(4,10,4,0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child:ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _result.length,
-                  prototypeItem: ListTile(
-                    title: Text(_result.isEmpty? "titolo" : _result.first.title),
-                  ),
-                  itemBuilder: (context, index) {
-                    return ListTile(title:GestureDetector(
-                      onTap:  () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyWebView(link: _result[index].link)),
-                        );
-                      },
-                      child: Card(
-                        elevation: 5,
-                        child:  Padding(
-                          padding: EdgeInsets.all(7),
-                          child: Stack(children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Stack(
-                                children: <Widget>[
-                                  Text(_result[index].title, style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
-                                ]
+            padding: const EdgeInsets.fromLTRB(4,10,4,10),
+            child: DraggableScrollableSheet(
+              minChildSize: 0,
+              maxChildSize: 1,
+              initialChildSize: 1,
+              builder:(context, scrollController) {
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _result.length,
+                    prototypeItem: ListTile(
+                      title: Text(_result.isEmpty? "titolo" : _result.first.title),
+                    ),
+                    itemBuilder: (context, index) {
+                      return ListTile(title:GestureDetector(
+                          onTap:  () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyWebView(link: _result[index].link)),
+                            );
+                          },
+                          child: Card(
+                              elevation: 5,
+                              child:  Padding(
+                                  padding: EdgeInsets.all(7),
+                                  child: Stack(children: <Widget>[
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Stack(
+                                            children: <Widget>[
+                                              Text(_result[index].title, style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
+                                            ]
+                                        )
+                                    )
+                                  ])
                               )
-                            )
-                          ])
-                        )
-                    ))
-                    );
-                  }
-              ),
-            ),
+                          ))
+                      );
+                    }
+                );
+              })
           ),
 
           /**body:ListView.builder(
