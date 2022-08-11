@@ -28,6 +28,7 @@ class MyWebViewState extends State<MyWebView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.teal),
         centerTitle: true,
         title:const Text(
               "Feed You",

@@ -1,6 +1,29 @@
+import 'package:flutter/material.dart';
+
 class Assets{
   List<String> langs(){
     return ["it","en","fr","de"];
+  }
+  List<String> topics(String lang){
+    const topics = {
+      "it":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
+      "en":["Top News","Cronaca","Politics","Economy","Society","Culture","Sports"],
+      "fr":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
+      "de":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
+    };
+    return (topics.keys.contains(lang))? topics[lang]! : topics["en"]!;
+  }
+  Color topicColor(int index){
+    List<Color> colors = [
+      const Color(0xff606060),
+      const Color(0xff006e8c),
+      const Color(0xffe93578),
+      const Color(0xffe61610),
+      const Color(0xff4c7a34),
+      const Color(0xff232323),
+      const Color(0xff1c0c4f)
+    ];
+    return index<colors.length? colors[index] : colors.last;
   }
 
   Map<String, List>? feeds(String lang){

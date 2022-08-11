@@ -1,15 +1,15 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:math';
 
+import 'package:favicon/favicon.dart' as favicon;
 import 'package:feed_you_flutter/Assets.dart';
+import 'package:feed_you_flutter/NewsData.dart';
 import 'package:feed_you_flutter/WebView.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
+
 
 void main() {
   runApp(
@@ -67,15 +67,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List _result = [];
+  List _sources = [];
 
   void _setList(list) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _result = list;
+    });
+  }
+  void _setSources(list) {
+    setState(() {
+      _sources = list;
     });
   }
 
@@ -90,9 +91,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //lista da popolare con le notizie da far comparire
     List news = [];
+    List sources = [];
 
     String stringTopics = prefs.getString('prefTopics') ?? '';
     String stringLang = prefs.getString('lang') ?? '';
+    List<String> topics = Assets().topics(stringLang);
     if (stringTopics != '' && stringLang != ''){
       List<dynamic> prefTopics = jsonDecode(stringTopics);
       List<double> bounds = [];
@@ -106,22 +109,64 @@ class _MyHomePageState extends State<MyHomePage> {
       List newsByTopic = [];
 
       //TODO per rapidità questa versione non ha i link bloccati
-      //TODO aggiungere il topic ed il logo ai vari elementi
+      //TODO testo sballa caratteri
 
       for (String topic in feeds.keys){
-        newsByTopic.add(<RssItem>[]);
+        newsByTopic.add(<NewsData>[]);
         for (int i =0 ;i<feeds[topic]!.length; i++){
           var url = Uri.parse(feeds[topic]![i]);
           try {
-            http.Response response = await http.get(url);
-            if (response.statusCode == 200) {
-              String data = response.body;
+            http.Response response1 = await http.get(url);
+            if (response1.statusCode == 200) {
+              String data = response1.body;
               var decodedData = RssFeed.parse(data);
               List<RssItem> items = decodedData.items!;
-              items.shuffle();
+
+              /**var url = Uri.parse(items.first.link!);
+              http.Response response = await http.get(url);
+              if (response.statusCode == 200) {
+                String doc = response.body;
+                dom.Element? icon;
+                try {
+                  icon = parse(doc).head?.querySelector("<html link>");//("link[href~=.*\\.(ico|png)]")!;
+                } catch (e) {
+                  try {
+                    icon = parse(doc).head?.querySelector("meta[itemprop=image]")!;
+                  } catch (e) {
+                    ;
+                  }
+                }
+                favicon = icon?.querySelector("href")?.text;
+                if (favicon?.startsWith('/') == true) {
+                  favicon = favicon!.substring(favicon.indexOf('/'));
+                  if (favicon.startsWith('/')) {
+                    favicon = favicon.substring(favicon.indexOf('/'));
+                  }
+                  if (!favicon.startsWith("www")) {
+                    var baseurl = items.first.link!.split('/');
+                    favicon = baseurl[0] + "//" + baseurl[2] + '/' + favicon;
+                  } else {
+                    favicon = "https://$favicon";
+                  }
+                }
+              }**/
+
+              favicon.Icon? ico = await favicon.Favicon.getBest(items.first.link!);
+              String favUrl = ico?.url ?? "https://google.com/favicon.ico";
+              Image img = Image.network(
+                  favUrl,
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.fill);
+
+              Color col = Assets().topicColor(int.parse(topic));
+              sources.add(SourceData(feeds[topic]![i], img, topics[int.parse(topic)], col));
+
               for (RssItem item in items) {
-                newsByTopic[int.parse(topic)].add(item);
+                newsByTopic[int.parse(topic)].add(
+                    NewsData(item.title!, item.link!, sources.length-1));
               }
+              newsByTopic[int.parse(topic)].shuffle();
             }
           } catch (e) {;}
         }
@@ -131,11 +176,15 @@ class _MyHomePageState extends State<MyHomePage> {
         double rand = Random().nextDouble();
         int i =0;
         while(i< bounds.length && rand>bounds[i]){i++;}
-        news.add(newsByTopic[i].removeAt(0));
+        if(newsByTopic[i].isNotEmpty) {
+          news.add(newsByTopic[i].removeAt(0));
+        }
       }
     }
+    _setSources(sources);
     _setList(news);
   }
+
 
   Future<bool> _onWillPop() async {
     return (await showDialog(
@@ -194,9 +243,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                     shrinkWrap: true,
                     itemCount: _result.length,
-                    prototypeItem: ListTile(
-                      title: Text(_result.isEmpty? "titolo" : _result.first.title),
-                    ),
                     itemBuilder: (context, index) {
                       return ListTile(title:GestureDetector(
                           onTap:  () {
@@ -206,133 +252,52 @@ class _MyHomePageState extends State<MyHomePage> {
                             );
                           },
                           child: Card(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               elevation: 5,
-                              child:  Padding(
-                                  padding: EdgeInsets.all(7),
-                                  child: Stack(children: <Widget>[
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Stack(
-                                            children: <Widget>[
-                                              Text(_result[index].title, style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
-                                            ]
-                                        )
-                                    )
-                                  ])
-                              )
-                          ))
+                              margin: const EdgeInsets.all(4.0),
+                              child: Container(
+                                  padding: EdgeInsets.all(8),
+                                  child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children:[
+                                        Stack(children: <Widget>[
+                                          Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Stack(
+                                                children: <Widget>[
+                                                  Text(_result[index].title, style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
+                                                ]
+                                            )
+                                          )
+                                        ]),
+                                        Row(
+                                          children: [
+                                            _sources[_result[index].source].logo,
+                                            Container(
+                                                decoration: BoxDecoration (
+                                                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                                                    color: Color(_sources[_result[index].source].color.value)
+                                                ),
+                                                padding: const EdgeInsets.all(2.0),
+                                                margin: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 0.0),
+                                                child: Text(
+                                                  _sources[_result[index].source].category,
+                                                  style: const TextStyle(color: Colors.white  ),
+                                                )
+                                            ),
+                                          ],
+                                        ),
+                                      ])
+                              ),
+                            ),
+                          )
                       );
                     }
                 );
               })
           ),
 
-          /**body:ListView.builder(
-            itemCount: 1, //widget.items.length,
-            prototypeItem: ListTile(
-              title: FutureBuilder(
-                future: Future {()=>_result},
-              initialData: "Loading text..",
-              builder: (BuildContext context, AsyncSnapshot<String> text) {
-                return SingleChildScrollView(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      text.data ?? "FLUTTER MERDA",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19.0,
-                      ),
-                    )
-                );
-              }),
-            ),
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: FutureBuilder(
-                  future: fetchFeed(),
-                  initialData: "Loading text..",
-                  builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (snapshot.hasData) {
-                      String assets = snapshot.data.toString();
-                      _incrementCounter(assets);
-                    } else if (snapshot.hasError) {
-                      setState(() {
-                        _incrementCounter(snapshot.error.toString());
-                      });
-                    }
-                    // By default, show a loading spinner
-                    return CircularProgressIndicator();
-                  }),
-              );
-            },
-          ),**/
-          /**Center(
-            // Center is a layout widget. It takes a single child and positions it
-            // in the middle of the parent.
-            child: Column(
-              // Column is also a layout widget. It takes a list of children and
-              // arranges them vertically. By default, it sizes itself to fit its
-              // children horizontally, and tries to be as tall as its parent.
-              //
-              // Invoke "debug painting" (press "p" in the console, choose the
-              // "Toggle Debug Paint" action from the Flutter Inspector in Android
-              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-              // to see the wireframe for each widget.
-              //
-              // Column has various properties to control how it sizes itself and
-              // how it positions its children. Here we use mainAxisAlignment to
-              // center the children vertically; the main axis here is the vertical
-              // axis because Columns are vertical (the cross axis would be
-              // horizontal).
-              mainAxisAlignment: MainAxisAlignment.center,
-
-
-              children: <Widget>[
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-
-                /**SingleChildScrollView(
-
-
-                  child: Container(
-                    color: Colors.white,
-                    height: 200.0,
-                    width: double.infinity,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(40),
-                                  side: BorderSide(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Container(
-                                  color: Colors.white,
-                                  width: 200,
-                                  height: 200,
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),**/
-              ],
-            ),
-          ),**/
           floatingActionButton: FloatingActionButton(
             onPressed: fetchFeed,
             tooltip: 'Increment',
@@ -341,4 +306,5 @@ class _MyHomePageState extends State<MyHomePage> {
         )
     );
   }
+
 }

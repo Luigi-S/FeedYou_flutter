@@ -37,6 +37,8 @@ dependencies:
   webview_flutter: 3.0.4
   shared_preferences: ^2.0.15
   path_provider: ^2.0.11
+  html: ^0.15.0
+  favicon: ^1.0.15
 
 dev_dependencies:
   flutter_test:
