@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:favicon/favicon.dart' as favicon;
 import 'package:feed_you_flutter/Assets.dart';
 import 'package:feed_you_flutter/NewsData.dart';
+import 'package:feed_you_flutter/Preferences.dart';
 import 'package:feed_you_flutter/WebView.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,8 +48,8 @@ class _NewsListState extends State<NewsList> {
 
     //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
     //TODO rimuovere quando inserita selezione preferenze
-    await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
-    await prefs.setString('lang', 'it');
+    //await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
+    //await prefs.setString('lang', '');
 
     //lista da popolare con le notizie da far comparire
     List news = [];
@@ -78,8 +79,6 @@ class _NewsListState extends State<NewsList> {
           try {
             http.Response response1 = await http.get(url);
             if (response1.statusCode == 200) {
-              //String data = response1.body;
-              //var codeUnits = response1.body.codeUnits;
               var decodedData = RssFeed.parse((const Utf8Decoder().convert(response1.bodyBytes)));
               List<RssItem> items = decodedData.items!;
 
@@ -94,10 +93,10 @@ class _NewsListState extends State<NewsList> {
                 newsByTopic[int.parse(topic)].add(
                     NewsData(item.title!, item.link!, sources.length-1));
               }
-              newsByTopic[int.parse(topic)].shuffle();
             }
           } catch (e) {;}
         }
+        newsByTopic[int.parse(topic)].shuffle();
       }
 
       for(int j =0; j<40; j++){
@@ -108,6 +107,13 @@ class _NewsListState extends State<NewsList> {
           news.add(newsByTopic[i].removeAt(0));
         }
       }
+    }
+    else{
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PreferencesView()),
+      );
+      return;
     }
     _setSources(sources);
     _setList(news);
@@ -145,6 +151,8 @@ class _NewsListState extends State<NewsList> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
+
     if (_result.isNotEmpty) {
       return WillPopScope(
           onWillPop: _onWillPop,

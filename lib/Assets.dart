@@ -4,6 +4,10 @@ class Assets{
   List<String> langs(){
     return ["it","en","fr","de"];
   }
+  String fullLangName(String lang){
+    Map<String,String> map = {"it": "Italiano","en": "English","fr": "François","de": "Deutsche",};
+    return map.keys.contains(lang)? map[lang]! : "Italiano";
+  }
   List<String> topics(String lang){
     const topics = {
       "it":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
@@ -54,13 +58,13 @@ class Assets{
           "https://www.corrieredellosport.it/rss"
         ]
       },
-      "en": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[]},
-      "fr": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[]},
-      "de": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[]},
+      "en": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
+      "fr": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
+      "de": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
       };
     var result =  (feeds.keys.contains(lang)) ?
       feeds[lang] :
-      {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[],"7":[]};
+      {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]};
     return result;
     }
 }
