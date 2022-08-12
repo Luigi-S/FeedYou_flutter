@@ -248,10 +248,10 @@ class _MyCheckBoxState extends State<MyCheckBox>{
       onChanged: (bool? val){
         if(val??false){
           checkedPrefs[index] = val!;
-          setState(() {
-            isChecked = val;
-          });
         }
+        setState(() {
+          isChecked = val!;
+        });
       },
     );
   }

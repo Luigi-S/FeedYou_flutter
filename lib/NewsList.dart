@@ -12,6 +12,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
 
+import 'Menu.dart';
+
 class NewsList extends StatefulWidget {
   const NewsList({Key? key}) : super(key: key);
   // This widget is the home page of your application. It is stateful, meaning
@@ -46,17 +48,19 @@ class _NewsListState extends State<NewsList> {
     print("=== CARICAMENTO NUOVE NEWS ===");
     final prefs = await SharedPreferences.getInstance();
 
-    //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
-    //TODO rimuovere quando inserita selezione preferenze
-    //await prefs.setString('prefTopics', '[0.4, 0.04, 0.04, 0.04, 0.04, 0.04, 0.4]');
-    //await prefs.setString('lang', '');
-
     //lista da popolare con le notizie da far comparire
     List news = [];
     List sources = [];
 
     String stringTopics = prefs.getString('prefTopics') ?? '';
     String stringLang = prefs.getString('lang') ?? '';
+
+    String stringBlocked = prefs.getString('blockedLinks') ?? '';
+    List<dynamic> blockedLinks = [];
+    if (stringBlocked != ''){
+      blockedLinks = jsonDecode(stringBlocked);
+    }
+
     List<String> topics = Assets().topics(stringLang);
     if (stringTopics != '' && stringLang != ''){
       List<dynamic> prefTopics = jsonDecode(stringTopics);
@@ -65,16 +69,16 @@ class _NewsListState extends State<NewsList> {
       for(int i = 1; i< prefTopics.length; i++){
         bounds.add(bounds[i-1] + prefTopics[i]);
       }
-
       //lista dei link ai feed di una lingua, divisi per topic
       Map<String, List> feeds = Assets().feeds(stringLang)!;
       List newsByTopic = [];
 
-      //TODO per rapidità questa versione non ha i link bloccati
-
       for (String topic in feeds.keys){
         newsByTopic.add(<NewsData>[]);
         for (int i =0 ;i<feeds[topic]!.length; i++){
+          if(blockedLinks.contains(feeds[topic]![i])){
+            break;
+          }
           var url = Uri.parse(feeds[topic]![i]);
           try {
             http.Response response1 = await http.get(url);
@@ -160,6 +164,7 @@ class _NewsListState extends State<NewsList> {
             appBar: AppBar(
               backgroundColor: Colors.white,
               centerTitle: true,
+              iconTheme: const IconThemeData(color: Colors.teal),
               title: const Text(
                   "Feed You",
                   style: TextStyle(
@@ -168,6 +173,18 @@ class _NewsListState extends State<NewsList> {
                       fontSize: 20.0
                   )
               ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          MenuView()),
+                    );
+                  },
+                ),
+              ],
             ),
 
             body:
@@ -284,6 +301,7 @@ class _NewsListState extends State<NewsList> {
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 centerTitle: true,
+                iconTheme: const IconThemeData(color: Colors.teal),
                 title: const Text(
                     "Feed You",
                     style: TextStyle(
@@ -292,6 +310,18 @@ class _NewsListState extends State<NewsList> {
                         fontSize: 20.0
                     )
                 ),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            MenuView()),
+                      );
+                    },
+                  ),
+                ],
               ),
               body:const Center(child:CircularProgressIndicator())
           )
