@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void fetchFeed()  async {
-    print("YOU PRESSED IT");
+    print("=== CARICAMENTO NUOVE NEWS ===");
     final prefs = await SharedPreferences.getInstance();
 
     //FINCHE NON AGGIUNGO METODO PER SETTARE PREFERENZE
@@ -124,35 +124,6 @@ class _MyHomePageState extends State<MyHomePage> {
               //var codeUnits = response1.body.codeUnits;
               var decodedData = RssFeed.parse((const Utf8Decoder().convert(response1.bodyBytes)));
               List<RssItem> items = decodedData.items!;
-
-              /**var url = Uri.parse(items.first.link!);
-              http.Response response = await http.get(url);
-              if (response.statusCode == 200) {
-                String doc = response.body;
-                dom.Element? icon;
-                try {
-                  icon = parse(doc).head?.querySelector("<html link>");//("link[href~=.*\\.(ico|png)]")!;
-                } catch (e) {
-                  try {
-                    icon = parse(doc).head?.querySelector("meta[itemprop=image]")!;
-                  } catch (e) {
-                    ;
-                  }
-                }
-                favicon = icon?.querySelector("href")?.text;
-                if (favicon?.startsWith('/') == true) {
-                  favicon = favicon!.substring(favicon.indexOf('/'));
-                  if (favicon.startsWith('/')) {
-                    favicon = favicon.substring(favicon.indexOf('/'));
-                  }
-                  if (!favicon.startsWith("www")) {
-                    var baseurl = items.first.link!.split('/');
-                    favicon = baseurl[0] + "//" + baseurl[2] + '/' + favicon;
-                  } else {
-                    favicon = "https://$favicon";
-                  }
-                }
-              }**/
 
               favicon.Icon? ico = await favicon.Favicon.getBest(items.first.link!);
               Image img = ico!= null ? Image.network(ico.url,height: 30,width: 30,fit: BoxFit.fill) :
@@ -194,12 +165,12 @@ class _MyHomePageState extends State<MyHomePage> {
             content: const Text('Do you want to exit an App'),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
-              ),
-              TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 child: const Text('Yes'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('No'),
               ),
             ],
           ),
@@ -208,104 +179,158 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //WidgetsBinding.instance.addPostFrameCallback((_) => fetchFeed());
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return WillPopScope(
-        onWillPop: _onWillPop,
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            centerTitle: true,
-            title:const Text(
-                "Feed You",
-                style: TextStyle(
-                    fontFamily: 'RockSalt',
-                    color: Colors.teal,
-                    fontSize: 20.0
+    if (_result.isNotEmpty) {
+      return WillPopScope(
+          onWillPop: _onWillPop,
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              title: const Text(
+                  "Feed You",
+                  style: TextStyle(
+                      fontFamily: 'RockSalt',
+                      color: Colors.teal,
+                      fontSize: 20.0
+                  )
+              ),
+            ),
+
+            body:
+            RefreshIndicator(
+                onRefresh: () async {
+                  return fetchFeed();
+                },
+                child: Container(
+                    height: double.maxFinite,
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.fromLTRB(4, 10, 4, 10),
+                    child: DraggableScrollableSheet(
+                        minChildSize: 0,
+                        maxChildSize: 1,
+                        initialChildSize: 1,
+                        builder: (context, scrollController) {
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _result.length,
+                              itemBuilder: (context, index) {
+                                return ListTile(title: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>
+                                          MyWebView(link: _result[index].link)),
+                                    );
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            10)),
+                                    elevation: 5,
+                                    margin: const EdgeInsets.all(4.0),
+                                    child: Container(
+                                        padding: EdgeInsets.all(8),
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Stack(children: <Widget>[
+                                                Align(
+                                                    alignment: Alignment
+                                                        .topLeft,
+                                                    child: Stack(
+                                                        children: <Widget>[
+                                                          Text(
+                                                            _result[index]
+                                                                .title,
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .teal,
+                                                                fontWeight: FontWeight
+                                                                    .bold),),
+                                                        ]
+                                                    )
+                                                )
+                                              ]),
+                                              Row(
+                                                children: [
+                                                  _sources[_result[index]
+                                                      .source].logo,
+                                                  Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius: const BorderRadius
+                                                              .all(
+                                                              Radius.circular(
+                                                                  10.0)),
+                                                          color: Color(
+                                                              _sources[_result[index]
+                                                                  .source].color
+                                                                  .value)
+                                                      ),
+                                                      padding: const EdgeInsets
+                                                          .all(2.0),
+                                                      margin: const EdgeInsets
+                                                          .fromLTRB(
+                                                          16.0, 0.0, 0.0, 0.0),
+                                                      child: Text(
+                                                        _sources[_result[index]
+                                                            .source].category,
+                                                        style: const TextStyle(
+                                                            color: Colors
+                                                                .white),
+                                                      )
+                                                  ),
+                                                ],
+                                              ),
+                                            ])
+                                    ),
+                                  ),
+                                )
+                                );
+                              }
+                          );
+                        })
                 )
             ),
-          ),
 
-          body: Container(
-            height: double.maxFinite,
-            width: double.maxFinite,
-            padding: const EdgeInsets.fromLTRB(4,10,4,10),
-            child: DraggableScrollableSheet(
-              minChildSize: 0,
-              maxChildSize: 1,
-              initialChildSize: 1,
-              builder:(context, scrollController) {
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: _result.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(title:GestureDetector(
-                          onTap:  () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MyWebView(link: _result[index].link)),
-                            );
-                          },
-                          child: Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              elevation: 5,
-                              margin: const EdgeInsets.all(4.0),
-                              child: Container(
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children:[
-                                        Stack(children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Stack(
-                                                children: <Widget>[
-                                                  Text(
-                                                    _result[index].title,
-                                                    style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),),
-                                                ]
-                                            )
-                                          )
-                                        ]),
-                                        Row(
-                                          children: [
-                                            _sources[_result[index].source].logo,
-                                            Container(
-                                                decoration: BoxDecoration (
-                                                    borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                                                    color: Color(_sources[_result[index].source].color.value)
-                                                ),
-                                                padding: const EdgeInsets.all(2.0),
-                                                margin: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 0.0),
-                                                child: Text(
-                                                  _sources[_result[index].source].category,
-                                                  style: const TextStyle(color: Colors.white  ),
-                                                )
-                                            ),
-                                          ],
-                                        ),
-                                      ])
-                              ),
-                            ),
-                          )
-                      );
-                    }
-                );
-              })
-          ),
-
-          floatingActionButton: FloatingActionButton(
-            onPressed: fetchFeed,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
-          ), // This trailing comma makes auto-formatting nicer for build methods.
-        )
-    );
+            /**floatingActionButton: FloatingActionButton(
+                onPressed: fetchFeed,
+                tooltip: 'Increment',
+                child: const Icon(Icons.add),
+                ),**/
+          )
+      );
+    }
+    else{
+      fetchFeed();
+      return WillPopScope(
+          onWillPop: _onWillPop,
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              title: const Text(
+                "Feed You",
+                style: TextStyle(
+                  fontFamily: 'RockSalt',
+                  color: Colors.teal,
+                  fontSize: 20.0
+                )
+              ),
+            ),
+            body:const Center(child:CircularProgressIndicator())
+          )
+      );
+    }
   }
 
 }
