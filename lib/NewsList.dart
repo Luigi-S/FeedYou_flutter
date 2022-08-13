@@ -52,6 +52,8 @@ class _NewsListState extends State<NewsList> {
     List news = [];
     List sources = [];
 
+    String singleFeed = prefs.getString('feedLink') ?? '';
+
     String stringTopics = prefs.getString('prefTopics') ?? '';
     String stringLang = prefs.getString('lang') ?? '';
 
@@ -70,13 +72,22 @@ class _NewsListState extends State<NewsList> {
         bounds.add(bounds[i-1] + prefTopics[i]);
       }
       //lista dei link ai feed di una lingua, divisi per topic
-      Map<String, List> feeds = Assets().feeds(stringLang)!;
+      Map<String, List> feeds = Map.of(Assets().feeds(stringLang)!);
       List newsByTopic = [];
+      if(singleFeed!=''){
+        for(String arg in feeds.keys){
+          if(feeds[arg]!.contains(singleFeed)){
+              feeds[arg] = <String>[singleFeed];
+          }else{
+            feeds[arg] = [];
+          }
+        }
+      }
 
       for (String topic in feeds.keys){
         newsByTopic.add(<NewsData>[]);
         for (int i =0 ;i<feeds[topic]!.length; i++){
-          if(blockedLinks.contains(feeds[topic]![i])){
+          if(blockedLinks.contains(feeds[topic]![i]) && singleFeed!=feeds[topic]![i]){
             break;
           }
           var url = Uri.parse(feeds[topic]![i]);
@@ -102,13 +113,14 @@ class _NewsListState extends State<NewsList> {
         }
         newsByTopic[int.parse(topic)].shuffle();
       }
-
-      for(int j =0; j<40; j++){
-        double rand = Random().nextDouble();
-        int i =0;
-        while(i< bounds.length && rand>bounds[i]){i++;}
-        if(newsByTopic[i].isNotEmpty) {
-          news.add(newsByTopic[i].removeAt(0));
+      if(singleFeed==''){
+        for(int j =0; j<40; j++){
+          double rand = Random().nextDouble();
+          int i =0;
+          while(i< bounds.length && rand>bounds[i]){i++;}
+          if(newsByTopic[i].isNotEmpty) {
+            news.add(newsByTopic[i].removeAt(0));
+          }
         }
       }
     }

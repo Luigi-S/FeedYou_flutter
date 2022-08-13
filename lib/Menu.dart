@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Assets.dart';
 import 'Preferences.dart';
+import 'SingleFeedView.dart';
 
 class MenuView extends StatelessWidget{
   @override
@@ -62,7 +63,22 @@ class MenuView extends StatelessWidget{
                     ],
                   ),
                 )
-            )
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                child: TextButton(
+                  onPressed:(){ _toSingleFeedView(context);},
+                  child: Row(
+                    children: const [
+                      Icon(Icons.add_card, color: Colors.teal,),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Text("Single Feed Mode", style: TextStyle(color: Colors.teal),)
+                      )
+                    ],
+                  ),
+                )
+            ),
           ],
         )
     );
@@ -81,6 +97,18 @@ class MenuView extends StatelessWidget{
       context,
       MaterialPageRoute(builder: (context) =>
           BlockedSourceView(feeds: feeds, blocked: blockedLinks)),
+    );
+  }
+
+  _toSingleFeedView(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? lang = await prefs.getString("lang")!;
+    String singleFeed = prefs.getString('feedLink') ?? '';
+        Map<String, List> feeds = Assets().feeds(lang)!;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>
+          SingleFeedView(feeds: feeds, singleFeed: singleFeed)),
     );
   }
 

@@ -57,8 +57,10 @@ class _BlockedSourceViewState extends State<BlockedSourceView>{
                             shrinkWrap: true,
                             itemCount: feeds[feeds.keys.elementAt(index)]!.length,
                             itemBuilder: (BuildContext context1, int index1) {
-                              return SourceLine(link: feeds[feeds.keys.elementAt(
-                                  index)]![index1], blocked: blocked);
+                              return SourceLine(
+                                  link: feeds[feeds.keys.elementAt(
+                                    index)]![index1], blocked: blocked
+                              );
                             },
                           )
                         ],
@@ -115,16 +117,14 @@ class _SourceLineState extends State<SourceLine>{
     if(blocked.contains(link)){
       print("SBLOCCANDO");
       blocked.remove(link);
-      prefs.remove("blockedLinks");
     }else{
       print("BLOCCANDO");
       blocked.add(link);
     }
+    prefs.remove("blockedLinks");
     prefs.setString("blockedLinks", jsonEncode(blocked));
     setState(() {
       blocked = blocked;
     });
   }
 }
-
-
