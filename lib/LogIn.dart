@@ -1,7 +1,8 @@
 import 'package:feed_you_flutter/NewsList.dart';
+import 'package:feed_you_flutter/PasswordRecovery.dart';
+import 'package:feed_you_flutter/SignUp.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 
 class LogIn extends StatefulWidget {
 
@@ -46,7 +47,7 @@ class _LogInState extends State<LogIn> {
             const SizedBox(
               width: 290,
               child: Text(
-              "Sign In",
+              "Sign Up",
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontFamily: 'Quicksand',
@@ -115,7 +116,6 @@ class _LogInState extends State<LogIn> {
 
             const SizedBox(height: 40),
 
-
             SizedBox(
               width: 290,
 
@@ -131,22 +131,83 @@ class _LogInState extends State<LogIn> {
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 15),
 
-            const Text(
-              "or use one of your social profiles",
-              style: TextStyle(
-                  fontFamily: 'Asap',
-                  fontSize: 16,
-                  color: Color(0xFF232323)
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 50),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+
+                  const Expanded(
+                      child: Text(
+                          "or continue without an account",
+                          style: TextStyle(
+                              fontFamily: 'Asap',
+                              fontSize: 16,
+                              color: Color(0xFF232323)
+                          ),
+                        ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  Expanded(
+                      child: ElevatedButton.icon(
+                        label: const Text("Anonymous"),
+                        icon: const Icon(Icons.account_circle),
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Colors.white,
+                          primary: Color(0xFF313131),
+                        ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
+                        onPressed: () => {_anonymousSignIn(context)},
+                  )),
+                ],
               ),
             ),
 
-          ]
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 35),
+              title: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: TextButton(
+                        child: const Text(
+                            "Forgot Password?",
+                            style: TextStyle(
+                            fontFamily: 'Asap',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color(0xFF232323)
+                          ),
+                        ),
+                      onPressed: () => {_passwordRecover(context)},
+
+                    )),
+
+
+                  Expanded(
+                      child: TextButton(
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              fontFamily: 'Asap',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Color(0xFF248b9c)
+                          ),
+                        ),
+                        onPressed: () => {_signUp(context)},
+
+                      )),
+
+              ],
+
           ),
         )
-      )
-    );
+      ])
+    )));
   }
 
 
@@ -179,30 +240,71 @@ class _LogInState extends State<LogIn> {
 
         signInSnack = SnackBar(content: Text('Login Successful'));
         ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const NewsList()));
 
       } on FirebaseAuthException catch (e) {
+        switch(e.code) {
 
-        if (e.code == 'user-not-found') {
-          signInSnack = SnackBar(content: Text('No user found for that email'));
-          ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+          case 'user-not-found':
+            signInSnack = SnackBar(content: Text('No user found for that email'));
+            ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+            break;
 
-        } else if (e.code == 'wrong-password') {
-          signInSnack =
-              SnackBar(content: Text('Wrong password provided for that user'));
-          ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+          case 'wrong-password':
+            signInSnack = SnackBar(content: Text('Wrong password provided for that user'));
+            ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+            break;
 
-        } else {
-          signInSnack =
-              SnackBar(content: Text('Someting went wrong, please try again'));
-          ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+          default:
+            signInSnack = SnackBar(content: Text('Someting went wrong, please try again'));
+            ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+            break;
         }
       }
     }
   }
 
+  void _passwordRecover(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PasswordRecovery()));
+  }
+
+  void _signUp(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SignUp()));
+  }
+
+  Future _anonymousSignIn(BuildContext context) async {
+    var signInSnack;
+
+    try {
+
+      await FirebaseAuth.instance.signInAnonymously();
+      signInSnack = SnackBar(content: Text('Login Successful'));
+      ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NewsList()));
+
+    } on FirebaseAuthException catch (e) {
+
+      switch (e.code) {
+
+        default:
+          signInSnack = SnackBar(content: Text('Someting went wrong, please try again'));
+          ScaffoldMessenger.of(context).showSnackBar(signInSnack);
+          break;
+      }
+    }
+
+
+  }
 
 
 }
