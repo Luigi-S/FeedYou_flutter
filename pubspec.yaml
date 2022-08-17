@@ -39,6 +39,8 @@ dependencies:
   path_provider: ^2.0.11
   html: ^0.15.0
   favicon: ^1.0.15
+  firebase_auth: ^3.6.3
+  firebase_core: ^1.20.1
 
 dev_dependencies:
   flutter_test:
@@ -98,3 +100,10 @@ flutter:
     - family: RockSalt
       fonts:
         - asset: fonts/RockSalt-webfont.ttf
+
+    - family: Asap
+      fonts:
+        - asset: fonts/Asap-Regular.otf
+    - family: Quicksand
+      fonts:
+        - asset: fonts/Quicksand_Bold.otf
