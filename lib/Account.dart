@@ -1,10 +1,7 @@
-import 'dart:io';
-
+import 'package:feed_you_flutter/ChangePassword.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class Account extends StatelessWidget {
   @override
@@ -63,7 +60,7 @@ class Account extends StatelessWidget {
               Padding(
                   padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {_changePassword(context);},
                     child: Row(
                       children: const [
                         Icon(Icons.password, color: Colors.teal,),
@@ -109,7 +106,7 @@ class Account extends StatelessWidget {
     try {
       await FirebaseAuth.instance.currentUser!.delete();
       accountSnack =
-          SnackBar(content: Text('Account deleted successfully, bye!'));
+          const SnackBar(content: Text('Account deleted successfully, bye!'));
       ScaffoldMessenger.of(context).showSnackBar(accountSnack);
 
       Navigator.popUntil(context, (Route<dynamic> predicate) => predicate.isFirst);
@@ -118,16 +115,26 @@ class Account extends StatelessWidget {
       switch (e.code) {
         default:
           accountSnack =
-              SnackBar(content: Text('Someting went wrong, please try again'));
+              const SnackBar(content: Text('Someting went wrong, please try again'));
           ScaffoldMessenger.of(context).showSnackBar(accountSnack);
           break;
       }
     }
   }
 
+  void _changePassword(BuildContext context) {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChangePassword(),
+    ));
+
+  }
+
+
   void _showDeleteAlert(BuildContext context) {
     Widget deleteButton = TextButton(
-      child: Text("Continue"),
+      child: const Text("Continue"),
       onPressed: () {
         _deleteAccount(context);
       Navigator.of(context).pop();
@@ -135,7 +142,7 @@ class Account extends StatelessWidget {
     );
 
     Widget cancelButton = TextButton(
-      child: Text("Cancel"),
+      child: const Text("Cancel"),
       onPressed: () {
         Navigator.of(context).pop();
       },

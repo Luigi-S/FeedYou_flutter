@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:feed_you_flutter/Account.dart';
 import 'package:feed_you_flutter/BlockedSourceView.dart';
+import 'package:feed_you_flutter/SignUp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,10 +99,85 @@ class MenuView extends StatelessWidget{
                 )
             ),
 
+            Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                child: TextButton(
+                  onPressed:(){_showLogOutAlert(context);},
+                  child: Row(
+                    children: const [
+                      Icon(Icons.logout_sharp, color: Colors.teal,),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Text("Logout", style: TextStyle(color: Colors.teal),)
+                      )
+                    ],
+                  ),
+                )
+            ),
 
           ],
         )
     );
+  }
+
+  void _showLogOutAlert(BuildContext context) {
+    Widget deleteButton = TextButton(
+      child: const Text("Continue"),
+      onPressed: () {
+        _logOut(context);
+        Navigator.of(context).pop();
+      },
+    );
+
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Image.asset(
+        'images/logo.png',
+        width: 100,
+        height: 100,
+
+      ),
+      content: const Text(
+        "Are you sure you want to logout?",
+        style: TextStyle(
+            fontFamily: 'Asap',
+            fontSize: 16,
+            color: Color(0xFF232323)
+        ),
+      ),
+      actions: [
+        cancelButton,
+        deleteButton
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+
+  Future _logOut(BuildContext context) async {
+
+    await FirebaseAuth.instance.signOut();
+
+    var menuSnack =
+    const SnackBar(content: Text('Logout successful, bye!'));
+    ScaffoldMessenger.of(context).showSnackBar(menuSnack);
+
+    Navigator.popUntil(context, (Route<dynamic> predicate) => predicate.isFirst);
+
+
   }
 
   _toBlockedSourceView(BuildContext context) async {
@@ -131,14 +208,27 @@ class MenuView extends StatelessWidget{
     );
   }
 
-  _toAccount(BuildContext context) async {
+  void _toAccount(BuildContext context) async {
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Account()),
-    );
+    if(FirebaseAuth.instance.currentUser!.email != "" &&
+        FirebaseAuth.instance.currentUser!.email != null) {
 
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Account()),
+      );
 
+    } else {
+
+      var menuSnack = const SnackBar(content: Text('You first need to create a Feed You Account'));
+      ScaffoldMessenger.of(context).showSnackBar(menuSnack);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SignUp()),
+      );
+
+    }
   }
 
 

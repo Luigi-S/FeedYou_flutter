@@ -1,4 +1,4 @@
-import 'package:feed_you_flutter/NewsList.dart';
+import 'package:feed_you_flutter/Account.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -212,58 +212,128 @@ class _SignUpState extends State<SignUp> {
     RegExp passwordRegex =
     RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[{}@#\$%^&+=*?'_ç£!<>])(?=\\S+\$).{6,}\$");
 
-    if (!_emailController.text.isEmpty && !_passwordController.text.isEmpty) {
+    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
       if (_checked) {
         if (passwordRegex.hasMatch(_passwordController.text)) {
-          try {
 
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: _emailController.text,
-              password: _passwordController.text,
-            );
+          if(FirebaseAuth.instance.currentUser == null) {
 
-            signUpSnack = SnackBar(content: Text(
-                'Account created Successfully!'));
-            ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+            _createAccount(_emailController.text, _passwordController.text);
 
-            Navigator.pop(context);
+          } else {
 
-          } on FirebaseAuthException catch (e) {
-            switch (e.code) {
-              case 'invalid-email':
-                signUpSnack = SnackBar(content: Text(
-                    'Invalid email'));
-                ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
-                break;
+            _linkAnonymous(_emailController.text, _passwordController.text);
 
-              case 'email-already-in-use':
-                  signUpSnack = SnackBar(content: Text(
-                      'The account already exists for that email'));
-                  ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
-                  break;
-
-              default:
-                signUpSnack = SnackBar(content: Text(
-                    'Something went wrong, please try again'));
-                ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
-                break;
-
-            }
           }
+
         } else {
-          signUpSnack = SnackBar(content: Text(
-              'Password too Weak'));
-          ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
-        }
+            signUpSnack = const SnackBar(content: Text(
+                'Password too Weak'));
+            ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+          }
       } else {
-        signUpSnack = SnackBar(content: Text(
+        signUpSnack = const SnackBar(content: Text(
             'You must accept terms and policy'));
         ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
       }
     } else {
-      signUpSnack = SnackBar(content: Text(
+      signUpSnack = const SnackBar(content: Text(
           'email and/or password missing'));
       ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
     }
   }
+
+  Future _createAccount(String email, String password) async {
+
+    var signUpSnack;
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      signUpSnack = const SnackBar(content: Text(
+          'Account created Successfully!'));
+      ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+
+      Navigator.pop(context);
+
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'invalid-email':
+          signUpSnack = const SnackBar(content: Text(
+              'Invalid email'));
+          ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+          break;
+
+        case 'email-already-in-use':
+          signUpSnack = const SnackBar(content: Text(
+              'The account already exists for that email'));
+          ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+          break;
+
+        default:
+          signUpSnack = const SnackBar(content: Text(
+              'Something went wrong, please try again'));
+          ScaffoldMessenger.of(context).showSnackBar(signUpSnack);
+          break;
+      }
+    }
+  }
+
+  Future _linkAnonymous(String email, String password) async {
+
+    var linkSnack;
+
+    final credential = EmailAuthProvider.credential(
+        email: _emailController.text,
+        password: _passwordController.text);
+
+    try {
+      await FirebaseAuth.instance.currentUser!.linkWithCredential(credential);
+
+      linkSnack = const SnackBar(content: Text(
+          'Account linked Successfully!'));
+      ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+
+      Navigator.pop(context);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Account()),
+      );
+
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+
+        case "provider-already-linked":
+          linkSnack = const SnackBar(content: Text(
+              'Email/password Account already linked'));
+          ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+          break;
+
+        case "invalid-credential":
+          linkSnack = const SnackBar(content: Text(
+              'Invalid credential'));
+          ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+          break;
+
+          case "credential-already-in-use":
+            linkSnack = const SnackBar(content: Text(
+            'The account corresponding to the credential already exists, or is already linked to a Firebase User.'));
+            ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+            break;
+
+        default:
+          linkSnack = const SnackBar(content: Text(
+              'Something went wrong, please try again'));
+          ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+          break;
+      }
+    }
+
+  }
+
+
 }

@@ -1,5 +1,7 @@
 
 import 'package:feed_you_flutter/LogIn.dart';
+import 'package:feed_you_flutter/NewsList.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
         //
         // primarySwatch: Colors.blue,
       ),
-      home: LogIn(),
+      home: FirebaseAuth.instance.currentUser == null ? LogIn(): NewsList(),
     );
   }
 }

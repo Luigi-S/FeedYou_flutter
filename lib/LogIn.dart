@@ -1,8 +1,8 @@
 import 'package:feed_you_flutter/NewsList.dart';
 import 'package:feed_you_flutter/PasswordRecovery.dart';
 import 'package:feed_you_flutter/SignUp.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class LogIn extends StatefulWidget {
 
@@ -15,18 +15,6 @@ class _LogInState extends State<LogIn> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-
-  @override
-  void initState() {
-
-    if(FirebaseAuth.instance.currentUser != null)
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NewsList()));
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
