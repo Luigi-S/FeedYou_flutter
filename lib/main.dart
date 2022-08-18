@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         //
         // primarySwatch: Colors.blue,
       ),
-      home: FirebaseAuth.instance.currentUser == null ? LogIn(): NewsList(),
+      home: FirebaseAuth.instance.currentUser == null ? LogIn() : const NewsList(),
     );
   }
 }

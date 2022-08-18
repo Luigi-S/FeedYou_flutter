@@ -1,4 +1,5 @@
 import 'package:feed_you_flutter/ChangePassword.dart';
+import 'package:feed_you_flutter/LogIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,11 @@ class Account extends StatelessWidget {
           const SnackBar(content: Text('Account deleted successfully, bye!'));
       ScaffoldMessenger.of(context).showSnackBar(accountSnack);
 
-      Navigator.popUntil(context, (Route<dynamic> predicate) => predicate.isFirst);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LogIn()),
+            (Route<dynamic> route) => false,
+      );
 
     } on FirebaseAuthException catch (e) {
       switch (e.code) {

@@ -3,12 +3,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-class ChangePassword extends StatelessWidget {
+class ChangePassword extends StatefulWidget {
+
+  @override
+  _ChangePasswordState createState() => _ChangePasswordState();
+
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
 
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  @override
+  void dispose() {
+    _oldPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    _newPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +81,7 @@ class ChangePassword extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
-                  controller: _oldPasswordController ,
+                  controller: _oldPasswordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
@@ -88,7 +102,7 @@ class ChangePassword extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
-                  controller: _newPasswordController ,
+                  controller: _newPasswordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
@@ -110,7 +124,7 @@ class ChangePassword extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
-                  controller: _confirmPasswordController ,
+                  controller: _confirmPasswordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(
@@ -148,44 +162,79 @@ class ChangePassword extends StatelessWidget {
   }
 
 
-  Future _changePassword(BuildContext context) async {
-
+  void _changePassword(BuildContext context) async {
     var changePasswordSnack;
-    final credential = EmailAuthProvider.credential(
-        email: FirebaseAuth.instance.currentUser!.email!,
-        password: _oldPasswordController.text);
+    RegExp passwordRegex =
+    RegExp(
+        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[{}@#\$%^&+=*?'_ç£!<>])(?=\\S+\$).{6,}\$");
 
-    if(_oldPasswordController.text.isEmpty || _confirmPasswordController.text.isEmpty
-    || _newPasswordController.text.isEmpty) {
+    if (_oldPasswordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty
+        && _newPasswordController.text.isNotEmpty) {
 
-      await FirebaseAuth.instance.currentUser!
-          .reauthenticateWithCredential(credential).then((_) async {
+      if (_newPasswordController.text == _confirmPasswordController.text) {
 
-            if (_newPasswordController.text == _confirmPasswordController.text) {
+        if (passwordRegex.hasMatch(_newPasswordController.text)) {
 
-              await FirebaseAuth.instance.currentUser!.updatePassword(
-                  _newPasswordController.text);
+          try {
+
+            final credential = EmailAuthProvider.credential(
+                email: FirebaseAuth.instance.currentUser!.email!,
+                password: _oldPasswordController.text);
+
+            await FirebaseAuth.instance.currentUser!
+                .reauthenticateWithCredential(credential);
+
+            await FirebaseAuth.instance.currentUser!.updatePassword(
+                _newPasswordController.text);
+
+            changePasswordSnack =
+                SnackBar(content: const Text(
+                    'Password Changed Successfully!'));
+            ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
+
+            Navigator.pop(context);
+
+          } on FirebaseAuthException catch (e) {
+            switch (e.code) {
+              case "wrong-password":
+                changePasswordSnack =
+                    SnackBar(content: const Text(
+                        'Wrong old password'));
+                ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
+                break;
+
+              default:
+                changePasswordSnack =
+                    SnackBar(content: const Text(
+                        'Something went wrong, please try again'));
+                ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
+                break;
+            }
+          }
+
+        } else {
+
+          changePasswordSnack =
+              SnackBar(content: const Text('New Password Too Weak'));
+          ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
+
+          }
 
         } else {
 
           changePasswordSnack =
               SnackBar(content: const Text('Password Confirmation failed'));
-              ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
-        }
-      }).catchError((error) {
-        changePasswordSnack = SnackBar(content: const Text('Wrong old password'));
+          ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
+
+          }
+
+      } else {
+
+        changePasswordSnack =
+            SnackBar(content: const Text('All fields required'));
         ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
-      });
-
-    } else {
-
-      changePasswordSnack = SnackBar(content: const Text('All fields required'));
-      ScaffoldMessenger.of(context).showSnackBar(changePasswordSnack);
 
     }
-
-
   }
-
-
 }

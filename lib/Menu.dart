@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:feed_you_flutter/Account.dart';
 import 'package:feed_you_flutter/BlockedSourceView.dart';
+import 'package:feed_you_flutter/LogIn.dart';
 import 'package:feed_you_flutter/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -175,8 +176,11 @@ class MenuView extends StatelessWidget{
     const SnackBar(content: Text('Logout successful, bye!'));
     ScaffoldMessenger.of(context).showSnackBar(menuSnack);
 
-    Navigator.popUntil(context, (Route<dynamic> predicate) => predicate.isFirst);
-
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LogIn()),
+          (Route<dynamic> route) => false,
+    );
 
   }
 
@@ -210,8 +214,7 @@ class MenuView extends StatelessWidget{
 
   void _toAccount(BuildContext context) async {
 
-    if(FirebaseAuth.instance.currentUser!.email != "" &&
-        FirebaseAuth.instance.currentUser!.email != null) {
+    if(!FirebaseAuth.instance.currentUser!.isAnonymous) {
 
       Navigator.push(
         context,
