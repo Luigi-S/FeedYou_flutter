@@ -149,7 +149,13 @@ class Account extends StatelessWidget {
 
       ),
       content: const Text(
-          "Are you sure you want to delete your Account? Operation cannot be undone!"),
+          "Are you sure you want to delete your Account? Operation cannot be undone!",
+            style: TextStyle(
+            fontFamily: 'Asap',
+            fontSize: 16,
+            color: Color(0xFF232323)
+        ),
+      ),
       actions: [
         cancelButton,
         deleteButton

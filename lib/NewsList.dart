@@ -147,7 +147,13 @@ class _NewsListState extends State<NewsList> {
             height: 100,
 
           ),
-            content: const Text('Are you sure you want to exit Feed You?'),
+            content: const Text('Are you sure you want to exit Feed You?',
+              style: TextStyle(
+                  fontFamily: 'Asap',
+                  fontSize: 16,
+                  color: Color(0xFF232323)
+              ),
+            ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
