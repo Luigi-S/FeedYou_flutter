@@ -141,16 +141,21 @@ class _NewsListState extends State<NewsList> {
       context: context,
       builder: (context) =>
           AlertDialog(
-            title: const Text('Are you sure?'),
-            content: const Text('Do you want to exit an App'),
+            title: Image.asset(
+            'images/logo.png',
+            width: 100,
+            height: 100,
+
+          ),
+            content: const Text('Are you sure you want to exit Feed You?'),
             actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes'),
-              ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -187,7 +192,7 @@ class _NewsListState extends State<NewsList> {
               ),
               actions: [
                 IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: Icon(Icons.menu),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -324,7 +329,7 @@ class _NewsListState extends State<NewsList> {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.settings),
+                    icon: Icon(Icons.menu),
                     onPressed: () {
                       Navigator.push(
                         context,

@@ -157,6 +157,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
   }
 
   Future _passwordReset(BuildContext context) async {
+
     var passwordResetSnack;
 
       if (!_emailController.text.isEmpty) {

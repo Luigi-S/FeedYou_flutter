@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:feed_you_flutter/Account.dart';
 import 'package:feed_you_flutter/BlockedSourceView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,24 @@ class MenuView extends StatelessWidget{
                   ),
                 )
             ),
+
+            Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                child: TextButton(
+                  onPressed:(){_toAccount(context);},
+                  child: Row(
+                    children: const [
+                      Icon(Icons.manage_accounts_rounded, color: Colors.teal,),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Text("Account", style: TextStyle(color: Colors.teal),)
+                      )
+                    ],
+                  ),
+                )
+            ),
+
+
           ],
         )
     );
@@ -111,5 +130,16 @@ class MenuView extends StatelessWidget{
           SingleFeedView(feeds: feeds, singleFeed: singleFeed)),
     );
   }
+
+  _toAccount(BuildContext context) async {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Account()),
+    );
+
+
+  }
+
 
 }

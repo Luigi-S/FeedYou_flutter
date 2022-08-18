@@ -16,6 +16,18 @@ class _LogInState extends State<LogIn> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+
+  @override
+  void initState() {
+
+    if(FirebaseAuth.instance.currentUser != null)
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const NewsList()));
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +59,7 @@ class _LogInState extends State<LogIn> {
             const SizedBox(
               width: 290,
               child: Text(
-              "Sign Up",
+              "Sign In",
               textAlign: TextAlign.left,
               style: TextStyle(
                   fontFamily: 'Quicksand',
@@ -302,9 +314,5 @@ class _LogInState extends State<LogIn> {
           break;
       }
     }
-
-
   }
-
-
 }
