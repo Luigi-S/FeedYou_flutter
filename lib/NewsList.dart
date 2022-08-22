@@ -31,6 +31,7 @@ class NewsList extends StatefulWidget {
 class _NewsListState extends State<NewsList> {
   List _result = [];
   List _sources = [];
+  bool _visibility = false;
 
   void _setList(list) {
     setState(() {
@@ -200,112 +201,136 @@ class _NewsListState extends State<NewsList> {
                     );
                   },
                 ),
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      _visibility = !_visibility;
+                    });
+                  },
+                ),
               ],
+
             ),
 
-            body:
-            RefreshIndicator(
-                onRefresh: () async {
-                  return fetchFeed();
-                },
-                child: Container(
-                    height: double.maxFinite,
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.fromLTRB(4, 10, 4, 10),
-                    child: DraggableScrollableSheet(
-                        minChildSize: 0,
-                        maxChildSize: 1,
-                        initialChildSize: 1,
-                        builder: (context, scrollController) {
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _result.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(title: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>
-                                          MyWebView(
-                                              link: _result[index].link,
-                                              source: _sources[_result[index]
-                                                  .source].link,
-                                              category: _sources[_result[index]
-                                                  .source].category
-                                          )),
-                                    );
-                                  },
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            10)),
-                                    elevation: 5,
-                                    margin: const EdgeInsets.all(4.0),
-                                    child: Container(
-                                        padding: EdgeInsets.all(8),
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Stack(children: <Widget>[
-                                                Align(
-                                                    alignment: Alignment
-                                                        .topLeft,
-                                                    child: Stack(
-                                                        children: <Widget>[
-                                                          Text(
-                                                            _result[index]
-                                                                .title,
-                                                            style: const TextStyle(
-                                                                color: Colors
-                                                                    .teal,
-                                                                fontWeight: FontWeight
-                                                                    .bold),),
-                                                        ]
-                                                    )
-                                                )
-                                              ]),
-                                              Row(
-                                                children: [
-                                                  _sources[_result[index]
-                                                      .source].logo,
-                                                  Container(
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: const BorderRadius
-                                                              .all(
-                                                              Radius.circular(
-                                                                  10.0)),
-                                                          color: Color(
-                                                              _sources[_result[index]
-                                                                  .source].color
-                                                                  .value)
-                                                      ),
-                                                      padding: const EdgeInsets
-                                                          .all(2.0),
-                                                      margin: const EdgeInsets
-                                                          .fromLTRB(
-                                                          16.0, 0.0, 0.0, 0.0),
-                                                      child: Text(
-                                                        _sources[_result[index]
-                                                            .source].category,
-                                                        style: const TextStyle(
-                                                            color: Colors
-                                                                .white),
+            body:RefreshIndicator(
+                  onRefresh: () async {
+                    return fetchFeed();
+                  },
+                  child: Column(
+                    children:[
+                      Visibility(
+                        visible: _visibility,
+                        child: Expanded(
+                          flex: 1,
+                          child:TextField(
+                            onChanged: (value) => _filter(value),
+                            decoration: const InputDecoration(
+                              labelText: 'Search', suffixIcon: Icon(Icons.search)),
+                          ),
+                        )
+                      ),
+                      Expanded(
+                      flex: 10,
+                      //padding: const EdgeInsets.fromLTRB(4, 10, 4, 10),
+                      child:
+                          DraggableScrollableSheet(
+                          minChildSize: 0,
+                          maxChildSize: 1,
+                          initialChildSize: 1,
+                          builder: (context, scrollController) {
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _result.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(title: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) =>
+                                            MyWebView(
+                                                link: _result[index].link,
+                                                source: _sources[_result[index]
+                                                    .source].link,
+                                                category: _sources[_result[index]
+                                                    .source].category
+                                            )),
+                                      );
+                                    },
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              10)),
+                                      elevation: 5,
+                                      margin: const EdgeInsets.all(4.0),
+                                      child: Container(
+                                          padding: EdgeInsets.all(8),
+                                          child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Stack(children: <Widget>[
+                                                  Align(
+                                                      alignment: Alignment
+                                                          .topLeft,
+                                                      child: Stack(
+                                                          children: <Widget>[
+                                                            Text(
+                                                              _result[index]
+                                                                  .title,
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .teal,
+                                                                  fontWeight: FontWeight
+                                                                      .bold),),
+                                                          ]
                                                       )
-                                                  ),
-                                                ],
-                                              ),
-                                            ])
+                                                  )
+                                                ]),
+                                                Row(
+                                                  children: [
+                                                    _sources[_result[index]
+                                                        .source].logo,
+                                                    Container(
+                                                        decoration: BoxDecoration(
+                                                            borderRadius: const BorderRadius
+                                                                .all(
+                                                                Radius.circular(
+                                                                    10.0)),
+                                                            color: Color(
+                                                                _sources[_result[index]
+                                                                    .source].color
+                                                                    .value)
+                                                        ),
+                                                        padding: const EdgeInsets
+                                                            .all(2.0),
+                                                        margin: const EdgeInsets
+                                                            .fromLTRB(
+                                                            16.0, 0.0, 0.0, 0.0),
+                                                        child: Text(
+                                                          _sources[_result[index]
+                                                              .source].category,
+                                                          style: const TextStyle(
+                                                              color: Colors
+                                                                  .white),
+                                                        )
+                                                    ),
+                                                  ],
+                                                ),
+                                              ])
+                                      ),
                                     ),
-                                  ),
-                                )
-                                );
-                              }
-                          );
-                        })
-                )
-            ),
+                                  )
+                                  );
+                                }
+                            );
+                          })
+
+                ),
+                    ]
+                  )
+              )
 
             /**floatingActionButton: FloatingActionButton(
                 onPressed: fetchFeed,
@@ -360,6 +385,20 @@ class _NewsListState extends State<NewsList> {
           context,
           MaterialPageRoute(builder: (context) => PreferencesView())
       );
+    }
+  }
+
+  _filter(String query) {
+    List results = [];
+    if (query.isNotEmpty) {
+      results = _result
+          .where((news) =>
+          news.title.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+
+    if(results.isNotEmpty){
+      _setList(results);
     }
   }
 
