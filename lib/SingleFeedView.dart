@@ -56,6 +56,7 @@ class _SingleFeedViewState extends State<SingleFeedView>{
           initialChildSize: 1,
           builder: (context, scrollController) {
             return ListView.builder(
+                  scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: feeds.keys.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -64,6 +65,7 @@ class _SingleFeedViewState extends State<SingleFeedView>{
                         Text(feeds.keys.elementAt(index),
                         style: const TextStyle(color: Colors.teal),),
                         ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: feeds[feeds.keys.elementAt(index)]!.length,
                           itemBuilder: (BuildContext context1, int index1) {

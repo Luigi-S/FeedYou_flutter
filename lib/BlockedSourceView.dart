@@ -54,6 +54,7 @@ class _BlockedSourceViewState extends State<BlockedSourceView>{
                           Text(feeds.keys.elementAt(index),
                             style: const TextStyle(color: Colors.teal),),
                           ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: feeds[feeds.keys.elementAt(index)]!.length,
                             itemBuilder: (BuildContext context1, int index1) {
