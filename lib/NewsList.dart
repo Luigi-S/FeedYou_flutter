@@ -187,7 +187,7 @@ class _NewsListState extends State<NewsList> {
                   style: TextStyle(
                       fontFamily: 'RockSalt',
                       color: Colors.teal,
-                      fontSize: 20.0
+                      fontSize: 16.0
                   )
               ),
               actions: [
@@ -354,7 +354,7 @@ class _NewsListState extends State<NewsList> {
                     style: TextStyle(
                         fontFamily: 'RockSalt',
                         color: Colors.teal,
-                        fontSize: 20.0
+                        fontSize: 16.0
                     )
                 ),
                 actions: [

@@ -39,7 +39,7 @@ class PreferencesViewState extends State<PreferencesView> {
                     style: TextStyle(
                         fontFamily: 'RockSalt',
                         color: Colors.teal,
-                        fontSize: 20.0
+                        fontSize: 16.0
                     )
                 ),
               ),
@@ -110,7 +110,7 @@ class PreferencesViewState extends State<PreferencesView> {
                     onPressed: () {
                       _topicsSelected();
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Select the topics you're interested in"),
+                        content: Text("Preferences changed!"),
                       ));
                     },
                     child: const Text('Continue'),

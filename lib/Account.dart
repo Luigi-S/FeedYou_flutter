@@ -17,7 +17,7 @@ class Account extends StatelessWidget {
               style: TextStyle(
                   fontFamily: 'RockSalt',
                   color: Colors.teal,
-                  fontSize: 20.0
+                  fontSize: 16.0
               )
           ),
         ),
@@ -34,7 +34,7 @@ class Account extends StatelessWidget {
                         Padding(
                             padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: Text(
-                              "Email", style: TextStyle(color: Colors.teal),)
+                              "Email", style: TextStyle(color: Color(0xFF232323)),)
                         )
                       ],
                     ),
@@ -43,20 +43,17 @@ class Account extends StatelessWidget {
 
               Padding(
                   padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                  child: SizedBox(
-                      width: 360,
                       child: Text(
                           FirebaseAuth.instance.currentUser!.email.toString(),
-                          textAlign: TextAlign.left,
+                          textAlign: TextAlign.center,
                           style: const TextStyle(
                               fontFamily: 'Asap',
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Color(0xFF313131)
+                              color: Colors.teal
                           )
                       )
-                  )
-              ),
+                  ),
 
               Padding(
                   padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
@@ -68,7 +65,7 @@ class Account extends StatelessWidget {
                         Padding(
                             padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: Text("Change Password",
-                              style: TextStyle(color: Colors.teal),)
+                              style: TextStyle(color: Color(0xFF232323)),)
                         )
                       ],
                     ),

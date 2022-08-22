@@ -32,7 +32,7 @@ class _BlockedSourceViewState extends State<BlockedSourceView>{
             style: TextStyle(
               fontFamily: 'RockSalt',
               color: Colors.teal,
-              fontSize: 20.0
+              fontSize: 16.0
             )
           ),
         ),

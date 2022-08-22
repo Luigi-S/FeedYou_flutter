@@ -44,13 +44,11 @@ class _LogInState extends State<LogIn> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
 
-            const SizedBox(
-              width: 290,
-              child: Text(
+            const Text(
               "Sign In",
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: 'Quicksand',
                   fontWeight: FontWeight.bold,
@@ -58,21 +56,18 @@ class _LogInState extends State<LogIn> {
                   color: Color(0xFF313131)
               ),
             ),
-          ),
 
             const SizedBox(height: 20),
 
-            const SizedBox(
-              width: 290,
-              child: Text(
-                  "Hi there! Nice to see you again!",
-                  style: TextStyle(
+            const Text(
+              "Hi there! Nice to see you again!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
                   fontFamily: 'Asap',
                   fontSize: 16,
                   color: Color(0xFF232323)
               ),
             ),
-          ),
 
             const SizedBox(height: 40),
 

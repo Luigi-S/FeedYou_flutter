@@ -28,7 +28,7 @@ class MenuView extends StatelessWidget{
             style: TextStyle(
               fontFamily: 'RockSalt',
               color: Colors.teal,
-              fontSize: 20.0
+              fontSize: 16.0
             )
           ),
         ),
@@ -43,7 +43,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.block, color: Colors.teal,),
                       Padding(
                         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text("Blocked Sources", style: TextStyle(color: Colors.teal),)
+                        child: Text("Blocked Sources", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),
@@ -63,7 +63,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.add_reaction, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Change Preferences", style: TextStyle(color: Colors.teal),)
+                          child: Text("Change Preferences", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),
@@ -78,7 +78,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.add_card, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Single Feed Mode", style: TextStyle(color: Colors.teal),)
+                          child: Text("Single Feed Mode", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),
@@ -94,7 +94,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.info, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("About Us", style: TextStyle(color: Colors.teal),)
+                          child: Text("About Us", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),
@@ -110,7 +110,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.manage_accounts_rounded, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Account", style: TextStyle(color: Colors.teal),)
+                          child: Text("Account", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),
@@ -126,7 +126,7 @@ class MenuView extends StatelessWidget{
                       Icon(Icons.logout_rounded, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Logout", style: TextStyle(color: Colors.teal),)
+                          child: Text("Logout", style: TextStyle(color: Color(0xFF232323)),)
                       )
                     ],
                   ),

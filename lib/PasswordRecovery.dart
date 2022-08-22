@@ -40,13 +40,11 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
               ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
 
-              const SizedBox(
-              width: 290,
-              child: Text(
+              const Text(
               "Password Recovery",
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.center,
               style: TextStyle(
               fontFamily: 'Quicksand',
               fontWeight: FontWeight.bold,
@@ -54,14 +52,14 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
               color: Color(0xFF313131)
               ),
               ),
-              ),
 
               const SizedBox(height: 20),
 
               const SizedBox(
-              width: 290,
-              child: Text(
+                width: 250,
+                child: Text(
               "Forgot your Password? Enter your Email, we send you password reset!",
+              textAlign: TextAlign.center,
               style: TextStyle(
               fontFamily: 'Asap',
               fontSize: 16,
@@ -107,7 +105,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
               ),
 
               ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 65),
+                contentPadding: EdgeInsets.symmetric(horizontal: 55),
                 title: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[

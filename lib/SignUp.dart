@@ -42,33 +42,28 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
 
-              const SizedBox(
-                width: 290,
-                child: Text(
+              const Text(
                   "Sign Up",
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: 'Quicksand',
                       fontWeight: FontWeight.bold,
                       fontSize: 26,
                       color: Color(0xFF313131)
-                  ),
                 ),
               ),
 
               const SizedBox(height: 20),
 
-              const SizedBox(
-                width: 290,
-                child: Text(
+              const Text(
                   "Hi there! First time here?",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: 'Asap',
                       fontSize: 16,
                       color: Color(0xFF232323)
-                  ),
                 ),
               ),
 
@@ -158,7 +153,7 @@ class _SignUpState extends State<SignUp> {
               ),
 
               ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 65),
+                contentPadding: EdgeInsets.symmetric(horizontal: 55),
                 title: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -308,6 +303,12 @@ class _SignUpState extends State<SignUp> {
         case "provider-already-linked":
           linkSnack = const SnackBar(content: Text(
               'Email/password Account already linked'));
+          ScaffoldMessenger.of(context).showSnackBar(linkSnack);
+          break;
+
+        case "email-already-in-use":
+          linkSnack = const SnackBar(content: Text(
+              'Email address already in use by another Account'));
           ScaffoldMessenger.of(context).showSnackBar(linkSnack);
           break;
 
