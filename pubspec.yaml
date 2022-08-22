@@ -43,6 +43,7 @@ dependencies:
   firebase_core: ^1.20.1
   firebase_database: ^9.1.2
   font_awesome_flutter: ^10.1.0
+  share_plus: ^4.0.10+1
 
 dev_dependencies:
   flutter_test:

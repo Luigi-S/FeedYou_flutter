@@ -226,7 +226,13 @@ class _NewsListState extends State<NewsList> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) =>
-                                          MyWebView(link: _result[index].link)),
+                                          MyWebView(
+                                              link: _result[index].link,
+                                              source: _sources[_result[index]
+                                                  .source].link,
+                                              category: _sources[_result[index]
+                                                  .source].category
+                                          )),
                                     );
                                   },
                                   child: Card(
