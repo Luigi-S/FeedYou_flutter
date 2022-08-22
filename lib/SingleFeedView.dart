@@ -116,15 +116,18 @@ class _FeedLineState extends State<FeedLine>{
       padding: const EdgeInsets.fromLTRB(24,4,4,4),
       child: Row(
           children: [
-            Container(
-                width: 300,
+            Expanded(
+                flex: 8,
                 child: Text(link, style: TextStyle(color: color))
             ),
-            TextButton(
-                onPressed: (){
-                  _toggleSingleFeed(parent);
-                },
-                child: const Icon(Icons.add_box_rounded, color: Colors.teal,)
+            Expanded(
+                flex: 2,
+                child: TextButton(
+                  onPressed: (){
+                    _toggleSingleFeed(parent);
+                  },
+                  child: const Icon(Icons.add_box_rounded, color: Colors.teal,)
+                )
             )
           ]
       ),

@@ -98,13 +98,16 @@ class _SourceLineState extends State<SourceLine>{
      padding: const EdgeInsets.fromLTRB(24,4,4,4),
      child: Row(
          children: [
-           Container(
-             width: 300,
+           Expanded(
+             flex: 8,
              child: Text(link, style: TextStyle(color: color))
            ),
-           TextButton(
-               onPressed: _block,
-               child: const Icon(Icons.block_flipped, color: Colors.teal, )
+           Expanded(
+               flex: 2,
+               child: TextButton(
+                 onPressed: _block,
+                 child: const Icon(Icons.block_flipped, color: Colors.teal, )
+               )
            )
          ]
      ),
