@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 
 class Assets{
   List<String> langs(){
-    return ["it","en","fr","de"];
+    return ["it","en"];
   }
   String fullLangName(String lang){
-    Map<String,String> map = {"it": "Italiano","en": "English","fr": "François","de": "Deutsche",};
+    Map<String,String> map = {"it": "Italiano","en": "English"};
     return map.keys.contains(lang)? map[lang]! : "Italiano";
   }
   List<String> topics(String lang){
     const topics = {
       "it":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
-      "en":["Top News","Cronaca","Politics","Economy","Society","Culture","Sports"],
-      "fr":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
-      "de":["Top News","Cronaca","Politica","Economia","Costume e Società","Cinema e Cultura","Sport"],
+      "en":["Top News","Cronaca","Politics","Economy","Society","Culture","Sports"]
     };
     return (topics.keys.contains(lang))? topics[lang]! : topics["en"]!;
   }
@@ -58,9 +56,26 @@ class Assets{
           "https://www.corrieredellosport.it/rss"
         ]
       },
-      "en": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
-      "fr": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
-      "de": {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]},
+      "en": {
+        "0": [
+          "http://rss.cnn.com/rss/cnn_topstories.rss",
+          "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+          ],
+        "1": [
+          "http://www.npr.org/rss/rss.php?id=1001",
+          "https://www.buzzfeed.com/world.xml"
+          ],
+        "2": ["https://www.theguardian.com/politics/rss"],
+        "3": ["https://www.economist.com/finance-and-economics/rss.xml"],
+        "4": ["https://www.theguardian.com/society/rss"],
+        "5":[
+          "https://feeds.npr.org/1008/rss.xml",
+          "https://feeds.npr.org/1045/rss.xml"
+          ],
+        "6": [
+          "https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml"
+          ]
+        }
       };
     var result =  (feeds.keys.contains(lang)) ?
       feeds[lang] :
