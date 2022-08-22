@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'AboutUsView.dart';
 import 'Assets.dart';
 import 'Preferences.dart';
 import 'SingleFeedView.dart';
@@ -87,6 +88,22 @@ class MenuView extends StatelessWidget{
             Padding(
                 padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
                 child: TextButton(
+                  onPressed:(){ _toAboutUs(context);},
+                  child: Row(
+                    children: const [
+                      Icon(Icons.info, color: Colors.teal,),
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: Text("About Us", style: TextStyle(color: Colors.teal),)
+                      )
+                    ],
+                  ),
+                )
+            ),
+
+            Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                child: TextButton(
                   onPressed:(){_toAccount(context);},
                   child: Row(
                     children: const [
@@ -106,7 +123,7 @@ class MenuView extends StatelessWidget{
                   onPressed:(){_showLogOutAlert(context);},
                   child: Row(
                     children: const [
-                      Icon(Icons.logout_sharp, color: Colors.teal,),
+                      Icon(Icons.logout_rounded, color: Colors.teal,),
                       Padding(
                           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: Text("Logout", style: TextStyle(color: Colors.teal),)
@@ -234,5 +251,11 @@ class MenuView extends StatelessWidget{
     }
   }
 
+  void _toAboutUs(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AboutUsView()),
+    );
+  }
 
 }
