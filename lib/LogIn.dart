@@ -2,7 +2,9 @@ import 'package:feed_you_flutter/NewsList.dart';
 import 'package:feed_you_flutter/PasswordRecovery.dart';
 import 'package:feed_you_flutter/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogIn extends StatefulWidget {
 
@@ -241,6 +243,26 @@ class _LogInState extends State<LogIn> {
         signInSnack = SnackBar(content: Text('Login Successful'));
         ScaffoldMessenger.of(context).showSnackBar(signInSnack);
 
+        DatabaseReference? refLang = FirebaseAuth.instance.currentUser?.uid != null ?
+          FirebaseDatabase.instance.ref("users/${FirebaseAuth.instance.currentUser!.uid}/lang") :
+          null;
+        DatabaseReference? refTopics = FirebaseAuth.instance.currentUser?.uid != null ?
+          FirebaseDatabase.instance.ref("users/${FirebaseAuth.instance.currentUser!.uid}/topics") :
+          null;
+        if(refLang != null && refTopics != null){
+          String? lang;
+          String? topics;
+          refLang.onValue.listen((DatabaseEvent event) {
+            lang = event.snapshot.value as String;
+          });
+          refTopics.onValue.listen((DatabaseEvent event) {
+            topics = event.snapshot.value.toString();
+          });
+          if(lang != null && topics != null){
+            setSharedPrefs(topics!,lang!);
+          }
+        }
+
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const NewsList()));
@@ -302,5 +324,12 @@ class _LogInState extends State<LogIn> {
           break;
       }
     }
+  }
+
+  setSharedPrefs(String preferences, String lang) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    await prefs.setString('prefTopics', preferences);
+    await prefs.setString('lang', lang);
   }
 }

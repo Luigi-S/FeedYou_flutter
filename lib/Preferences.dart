@@ -1,5 +1,7 @@
 
 import 'package:feed_you_flutter/NewsList.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +19,9 @@ class PreferencesViewState extends State<PreferencesView> {
   String? lang;
   DropDown dropdown = DropDown();
   List<bool> checkedPrefs = [];
+  DatabaseReference? ref = FirebaseAuth.instance.currentUser?.uid != null ?
+    FirebaseDatabase.instance.ref("users/${FirebaseAuth.instance.currentUser!.uid}") :
+    null;
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +161,13 @@ class PreferencesViewState extends State<PreferencesView> {
     prefs.clear();
     await prefs.setString('prefTopics', preferences.toString());
     await prefs.setString('lang', lang!);
+
+    if(ref != null) {
+      await ref!.set({
+        "lang": lang,
+        "topics": preferences.toString(),
+      });
+    }
     //vai a newslist
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewsList()));
   }

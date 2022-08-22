@@ -170,15 +170,8 @@ class _NewsListState extends State<NewsList> {
 
   @override
   Widget build(BuildContext context) {
-    //WidgetsBinding.instance.addPostFrameCallback((_) => fetchFeed());
 
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-
+    _hasPrefs();
 
     if (_result.isNotEmpty) {
       return WillPopScope(
@@ -348,6 +341,18 @@ class _NewsListState extends State<NewsList> {
               ),
               body:const Center(child:CircularProgressIndicator())
           )
+      );
+    }
+  }
+
+  Future<void> _hasPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    String topics = prefs.getString('prefTopics') ?? '';
+    String lang = prefs.getString('lang') ?? '';
+    if(lang == '' || topics == '') {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PreferencesView())
       );
     }
   }

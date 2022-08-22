@@ -3,6 +3,7 @@ import 'package:feed_you_flutter/LogIn.dart';
 import 'package:feed_you_flutter/NewsList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     //List items = List.generate(100, (i) => fetch());
+    bool isLogged = (FirebaseAuth.instance.currentUser != null);
 
     return MaterialApp(
       title: 'Flutter Demo',
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
         //
         // primarySwatch: Colors.blue,
       ),
-      home: FirebaseAuth.instance.currentUser == null ? LogIn() : const NewsList(),
+      home: !isLogged ? LogIn() : const NewsList(),
     );
   }
 }

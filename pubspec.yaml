@@ -41,6 +41,7 @@ dependencies:
   favicon: ^1.0.15
   firebase_auth: ^3.6.3
   firebase_core: ^1.20.1
+  firebase_database: ^9.1.2
   font_awesome_flutter: ^10.1.0
 
 dev_dependencies:
