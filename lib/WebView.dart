@@ -115,6 +115,9 @@ class MyWebViewState extends State<MyWebView> {
     blocked.add(source);
     prefs.remove("blockedLinks");
     prefs.setString("blockedLinks", jsonEncode(blocked));
+    final blockSnack = const SnackBar(content: Text(
+        'Selected Source blocked successfully, you can view your blocked Sources in the menu'));
+    ScaffoldMessenger.of(context).showSnackBar(blockSnack);
   }
 
   _share(String link){
