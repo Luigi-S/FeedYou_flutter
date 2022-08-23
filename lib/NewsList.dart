@@ -176,9 +176,17 @@ class _NewsListState extends State<NewsList> {
 
     if (_result.isNotEmpty) {
       return WillPopScope(
-          onWillPop: _onWillPop,
+          onWillPop: () async {
+            return await _onWillPop();
+          },
           child: Scaffold(
             appBar: AppBar(
+              leading: GestureDetector(
+                child: const Icon( Icons.arrow_back, color: Colors.teal,  ),
+                onTap: () {
+                  _onWillPop();
+                },
+              ),
               backgroundColor: Colors.white,
               centerTitle: true,
               iconTheme: const IconThemeData(color: Colors.teal),
@@ -343,11 +351,19 @@ class _NewsListState extends State<NewsList> {
     else{
       fetchFeed();
       return WillPopScope(
-          onWillPop: _onWillPop,
+          onWillPop: () async {
+            return await _onWillPop();
+          },
           child: Scaffold(
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 centerTitle: true,
+                leading: GestureDetector(
+                  child: const Icon( Icons.arrow_back, color: Colors.teal,  ),
+                  onTap: () {
+                    _onWillPop();
+                  },
+                ),
                 iconTheme: const IconThemeData(color: Colors.teal),
                 title: const Text(
                     "Feed You",
