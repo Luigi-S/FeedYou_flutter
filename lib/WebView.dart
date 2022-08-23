@@ -78,7 +78,7 @@ class MyWebViewState extends State<MyWebView> {
   }
 
   Future<void> _updatePref() async {
-    sleep(const Duration(seconds:20));
+    //sleep(const Duration(seconds:10));
     final prefs = await SharedPreferences.getInstance();
     String stringTopics = prefs.getString('prefTopics') ?? '';
     String lang = prefs.getString('lang') ?? '';

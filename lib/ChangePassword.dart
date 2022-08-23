@@ -48,11 +48,9 @@ class _ChangePasswordState extends State<ChangePassword> {
               const SizedBox(height: 25),
 
 
-              const SizedBox(
-                width: 290,
-                child: Text(
+              const Text(
                   "Change Password",
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                       fontFamily: 'Quicksand',
                       fontWeight: FontWeight.bold,
@@ -60,12 +58,11 @@ class _ChangePasswordState extends State<ChangePassword> {
                       color: Color(0xFF313131)
                   ),
                 ),
-              ),
 
               const SizedBox(height: 20),
 
               const SizedBox(
-                width: 290,
+                width: 250,
                 child: Text(
                   "Password should contain at least: 6 characters length, 1 capital letter, 1 number, 1 special character.",
                   style: TextStyle(
@@ -144,7 +141,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
 
               SizedBox(
-                width: 290,
+                width: 260,
 
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
