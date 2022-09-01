@@ -40,8 +40,6 @@ class MyWebViewState extends State<MyWebView> {
 
   @override
   Widget build(BuildContext context) {
-    _updatePref();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -77,33 +75,6 @@ class MyWebViewState extends State<MyWebView> {
     );
   }
 
-  Future<void> _updatePref() async {
-    //sleep(const Duration(seconds:10));
-    final prefs = await SharedPreferences.getInstance();
-    String stringTopics = prefs.getString('prefTopics') ?? '';
-    String lang = prefs.getString('lang') ?? '';
-    List<double> preferences = jsonDecode(stringTopics);
-    var cats = Assets().topics(lang);
-    int cat = cats.indexOf(category);
-    for (int i =0; i<preferences.length;i++){
-      if(i==cat){
-        preferences[i] = (preferences[i]+0.01)/1.01;
-      }else{
-        preferences[i] = preferences[i]/1.01;
-      }
-    }
-    prefs.clear();
-    await prefs.setString('prefTopics', preferences.toString());
-    DatabaseReference? ref = FirebaseAuth.instance.currentUser?.uid != null ?
-      FirebaseDatabase.instance.ref("users/${FirebaseAuth.instance.currentUser!.uid}") :
-      null;
-    if(ref != null) {
-      await ref.set({
-      "lang": lang,
-      "topics": preferences.toString(),
-      });
-    }
-  }
 
   Future<void> _block(String source) async {
     final prefs = await SharedPreferences.getInstance();
