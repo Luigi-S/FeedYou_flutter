@@ -21,7 +21,21 @@ class Account extends StatelessWidget {
               )
           ),
         ),
-        body: Column(
+      body: Container(
+        height: double.maxFinite,
+        width: double.maxFinite,
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: DraggableScrollableSheet(
+          minChildSize: 0,
+          maxChildSize: 1,
+          initialChildSize: 1,
+          builder: (context, scrollController) {
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: 1,
+            itemBuilder: (BuildContext context, int index) {
+
+            return Column(
             children: [
 
               Padding(
@@ -91,10 +105,13 @@ class Account extends StatelessWidget {
                   )
               ),
 
-            ]
-
-
+              ]
+              );
+             }
+            );
+          }
         )
+      )
     );
   }
 

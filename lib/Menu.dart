@@ -32,111 +32,131 @@ class MenuView extends StatelessWidget{
             )
           ),
         ),
-        body:Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){ _toBlockedSourceView(context);},
-                  child: Row(
-                    children: const [
-                      Icon(Icons.block, color: Colors.teal,),
+        body: Container(
+            height: double.maxFinite,
+            width: double.maxFinite,
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: DraggableScrollableSheet(
+                minChildSize: 0,
+                maxChildSize: 1,
+                initialChildSize: 1,
+                builder: (context, scrollController) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 1,
+                  itemBuilder: (BuildContext context, int index) {
+
+
+                  return Column(
+                    children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                        child: Text("Blocked Sources", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PreferencesView())
+                        padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                          child: TextButton(
+                            onPressed:(){ _toBlockedSourceView(context);},
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.block, color: Colors.teal,),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                    child: Text("Blocked Sources", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                            child: TextButton(
+                              onPressed:(){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => PreferencesView())
+                                );
+                              },
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.add_reaction, color: Colors.teal,),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      child: Text("Change Preferences", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                            child: TextButton(
+                              onPressed:(){ _toSingleFeedView(context);},
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.add_card, color: Colors.teal,),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      child: Text("Single Feed Mode", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                            child: TextButton(
+                              onPressed:(){ _toAboutUs(context);},
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.info, color: Colors.teal,),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      child: Text("About Us", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                            child: TextButton(
+                              onPressed:(){_toAccount(context);},
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.manage_accounts_rounded, color: Colors.teal,),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      child: Text("Account", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+
+                        Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+                            child: TextButton(
+                              onPressed:(){_showLogOutAlert(context);},
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.logout_rounded, color: Colors.teal,),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                      child: Text("Logout", style: TextStyle(color: Color(0xFF232323)),)
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
+                      ],
                     );
-                  },
-                  child: Row(
-                    children: const [
-                      Icon(Icons.add_reaction, color: Colors.teal,),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Change Preferences", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-            Padding(
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){ _toSingleFeedView(context);},
-                  child: Row(
-                    children: const [
-                      Icon(Icons.add_card, color: Colors.teal,),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Single Feed Mode", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-
-            Padding(
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){ _toAboutUs(context);},
-                  child: Row(
-                    children: const [
-                      Icon(Icons.info, color: Colors.teal,),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("About Us", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-
-            Padding(
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){_toAccount(context);},
-                  child: Row(
-                    children: const [
-                      Icon(Icons.manage_accounts_rounded, color: Colors.teal,),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Account", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-
-            Padding(
-                padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
-                child: TextButton(
-                  onPressed:(){_showLogOutAlert(context);},
-                  child: Row(
-                    children: const [
-                      Icon(Icons.logout_rounded, color: Colors.teal,),
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Text("Logout", style: TextStyle(color: Color(0xFF232323)),)
-                      )
-                    ],
-                  ),
-                )
-            ),
-
-          ],
+                  }
+                );
+            }
+          )
         )
     );
   }
+
 
   void _showLogOutAlert(BuildContext context) {
     Widget deleteButton = TextButton(
