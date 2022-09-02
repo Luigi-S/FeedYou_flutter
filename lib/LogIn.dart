@@ -21,6 +21,7 @@ class _LogInState extends State<LogIn> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
@@ -207,18 +208,6 @@ class _LogInState extends State<LogIn> {
       ])
     )));
   }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      setState(() {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-      });
-    }
-  }
   
   @override
   void initState() {
@@ -229,13 +218,15 @@ class _LogInState extends State<LogIn> {
     ]);
   }
 
+
+
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
     ]);
     _emailController.dispose();
     _passwordController.dispose();

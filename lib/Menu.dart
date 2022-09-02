@@ -8,6 +8,7 @@ import 'package:feed_you_flutter/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'AboutUsView.dart';
@@ -162,6 +163,10 @@ class MenuView extends StatelessWidget{
     Widget deleteButton = TextButton(
       child: const Text("Continue"),
       onPressed: () {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
         _logOut(context);
         Navigator.of(context).pop();
       },
@@ -208,6 +213,8 @@ class MenuView extends StatelessWidget{
   Future _logOut(BuildContext context) async {
 
     await FirebaseAuth.instance.signOut();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
 
     var menuSnack =
     const SnackBar(content: Text('Logout successful, bye!'));

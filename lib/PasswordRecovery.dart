@@ -133,7 +133,8 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
                                 color: Color(0xFF248b9c)
                             ),
                           ),
-                          onPressed: () => {Navigator.pop(context)},
+                          onPressed: () {
+                            Navigator.pop(context);},
 
                         )),
 
@@ -159,20 +160,8 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-    }
-  }
-
-  @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);

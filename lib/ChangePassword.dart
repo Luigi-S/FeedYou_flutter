@@ -151,6 +151,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     );
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -161,22 +162,12 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-    }
-  }
-
-  @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
     ]);
     _oldPasswordController.dispose();
     _newPasswordController.dispose();

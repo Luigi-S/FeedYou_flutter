@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AboutUsView extends StatelessWidget {
   const AboutUsView({Key? key}) : super(key: key);

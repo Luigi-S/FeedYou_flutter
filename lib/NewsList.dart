@@ -1,13 +1,18 @@
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+
 
 import 'package:favicon/favicon.dart' as favicon;
 import 'package:feed_you_flutter/Assets.dart';
 import 'package:feed_you_flutter/NewsData.dart';
 import 'package:feed_you_flutter/Preferences.dart';
 import 'package:feed_you_flutter/WebView.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +20,7 @@ import 'package:http/http.dart' as http;
 import 'Menu.dart';
 
 class NewsList extends StatefulWidget {
+
   const NewsList({Key? key}) : super(key: key);
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -29,6 +35,9 @@ class NewsList extends StatefulWidget {
 }
 
 class _NewsListState extends State<NewsList> {
+
+
+
   List _result = [];
   List _sources = [];
   bool _visibility = false;
@@ -45,8 +54,21 @@ class _NewsListState extends State<NewsList> {
   }
 
 
-  void fetchFeed()  async {
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
+    super.dispose();
+  }
+
+  void fetchFeed() async {
     print("=== CARICAMENTO NUOVE NEWS ===");
+    await _hasPrefs();
     final prefs = await SharedPreferences.getInstance();
 
     //lista da popolare con le notizie da far comparire
@@ -65,7 +87,7 @@ class _NewsListState extends State<NewsList> {
     }
 
     List<String> topics = Assets().topics(stringLang);
-    if (stringTopics != '' && stringLang != ''){
+    if (stringTopics != '' && stringLang != '') {
       List<dynamic> prefTopics = jsonDecode(stringTopics);
       List<double> bounds = [];
       bounds.add(prefTopics.first);
@@ -124,8 +146,7 @@ class _NewsListState extends State<NewsList> {
           }
         }
       }
-    }
-    else{
+    } else{
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => PreferencesView()),
@@ -161,7 +182,13 @@ class _NewsListState extends State<NewsList> {
                 child: const Text('No'),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
+                onPressed: () {
+                    if (Platform.isAndroid) {
+                      SystemNavigator.pop();
+                      } else if (Platform.isIOS) {
+                      exit(0);
+                      }
+                    },
                 child: const Text('Yes'),
               ),
             ],
@@ -172,7 +199,14 @@ class _NewsListState extends State<NewsList> {
   @override
   Widget build(BuildContext context) {
 
-    _hasPrefs();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+
+    //_hasPrefs();
 
     if (_result.isNotEmpty) {
       return WillPopScope(
@@ -339,17 +373,12 @@ class _NewsListState extends State<NewsList> {
                     ]
                   )
               )
-
-            /**floatingActionButton: FloatingActionButton(
-                onPressed: fetchFeed,
-                tooltip: 'Increment',
-                child: const Icon(Icons.add),
-                ),**/
           )
       );
     }
     else{
       fetchFeed();
+
       return WillPopScope(
           onWillPop: () async {
             return await _onWillPop();
@@ -394,15 +423,26 @@ class _NewsListState extends State<NewsList> {
 
   Future<void> _hasPrefs() async {
     final prefs = await SharedPreferences.getInstance();
+    final DatabaseReference? firebase_db = FirebaseAuth.instance.currentUser?.uid != null ?
+    FirebaseDatabase.instance.ref("users/${FirebaseAuth.instance.currentUser!.uid}") :
+    null;
+
     String topics = prefs.getString('prefTopics') ?? '';
     String lang = prefs.getString('lang') ?? '';
-    if(lang == '' || topics == '') {
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PreferencesView())
-      );
+
+    if((lang == "" || topics == "") && firebase_db != null && !FirebaseAuth.instance.currentUser!.isAnonymous) {
+      final lang_db = await firebase_db.child("lang").get();
+      if (lang_db.exists) {
+        await prefs.setString('lang', lang_db.value.toString());
+      }
+
+      final topics_db = await firebase_db.child("topics").get();
+      if (topics_db.exists) {
+        await prefs.setString('prefTopics', topics_db.value.toString());
+      }
     }
   }
+
 
   _filter(String query) {
     List results = [];

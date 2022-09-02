@@ -3,6 +3,7 @@ import 'package:feed_you_flutter/LogIn.dart';
 import 'package:feed_you_flutter/NewsList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,10 @@ class MyApp extends StatelessWidget {
 
     //List items = List.generate(100, (i) => fetch());
     bool isLogged = (FirebaseAuth.instance.currentUser != null);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     return MaterialApp(
       title: 'Flutter Demo',
