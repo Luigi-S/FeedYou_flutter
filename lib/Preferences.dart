@@ -95,7 +95,7 @@ class PreferencesViewState extends State<PreferencesView> {
               style: TextStyle(
                   fontFamily: 'RockSalt',
                   color: Colors.teal,
-                  fontSize: 20.0
+                  fontSize: 16.0
               )
             ),
           ),
@@ -109,9 +109,6 @@ class PreferencesViewState extends State<PreferencesView> {
                   ElevatedButton(
                     onPressed: () {
                       _topicsSelected();
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Preferences changed!"),
-                      ));
                     },
                     child: const Text('Continue'),
                   )
@@ -138,6 +135,9 @@ class PreferencesViewState extends State<PreferencesView> {
       }
     }
     if(numPrefs ==0){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Please select some topics!"),
+      ));
       return;
     }
     final prefs = await SharedPreferences.getInstance();
@@ -169,6 +169,9 @@ class PreferencesViewState extends State<PreferencesView> {
       });
     }
     //vai a newslist
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text("Preferences changed!"),
+    ));
     Navigator.push(context, MaterialPageRoute(builder: (context) => NewsList()));
   }
 
